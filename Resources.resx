@@ -117,11 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="index" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>web\index.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="keywords" xml:space="preserve">
     <value>select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outerinner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values</value>
     <comment>SQL keywords</comment>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="postConnectionString" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>web\postconnectionstring.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="queryObjectDependancies" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>sqlscripts\queryobjectdependancies.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>

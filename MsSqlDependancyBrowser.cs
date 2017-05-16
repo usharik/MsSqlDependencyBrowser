@@ -7,6 +7,9 @@ using System.Text;
 using System.Xml;
 using System.Xml.Xsl;
 using SqlScriptParser;
+using System.Threading.Tasks;
+using System.Threading;
+using System.IO;
 
 namespace MsSqlDependancyBrowser
 {
@@ -17,7 +20,9 @@ namespace MsSqlDependancyBrowser
             static HashSet<string> keywords;
             static XslCompiledTransform xslTranCompiler;
             const string objectNameParam = "sp";
-            const string clientUrl = "http://localhost:8085/";
+            const string clientUrl = "http://localhost:8080/";
+            const string connectUrl = clientUrl + "connect/";
+            static string connectionString = @"Data Source=PC;Initial Catalog=test;Integrated Security=True";
 
             static void Main()
             {
@@ -31,19 +36,37 @@ namespace MsSqlDependancyBrowser
                 var web = new HttpListener();
 
                 web.Prefixes.Add(clientUrl);
+                web.Prefixes.Add(connectUrl);
 
                 Console.WriteLine("Listening..");
 
                 web.Start();
 
+                Listner(web);
+
+                Console.ReadKey();
+
+                web.Stop();
+            }
+
+            static async void Listner(HttpListener web)
+            {
                 for (;;)
                 {
-                    var context = web.GetContext();
+                    var context = await web.GetContextAsync();
+                    Task.Factory.StartNew(() => processRequest(context));
+                }
+            }
 
-                    var response = context.Response;
-                    Console.WriteLine(context.Request.RawUrl);
-                    Console.WriteLine(context.Request.HttpMethod);
+            static void processRequest(HttpListenerContext context)
+            {
+                var response = context.Response;
+                Console.WriteLine($"Thread ID { Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine(context.Request.RawUrl);
+                Console.WriteLine(context.Request.HttpMethod);
 
+                if (context.Request.Url.AbsolutePath == "/" && context.Request.HttpMethod == "GET")
+                {
                     string result = "";
                     string spName = "";
                     foreach (string key in context.Request.QueryString.Keys)
@@ -57,10 +80,7 @@ namespace MsSqlDependancyBrowser
                         Console.WriteLine($"key {key} value {context.Request.QueryString[key]}");
                     }
 
-                    string responseString = $@" <html>
-                                                    <head><title>{spName}</title></head>
-                                                    <body><pre>{result}</pre></body>
-                                                </html>";
+                    string responseString = string.Format(Resources.index, spName, Resources.postConnectionString, connectionString, result);
 
                     var buffer = Encoding.UTF8.GetBytes(responseString);
 
@@ -72,17 +92,29 @@ namespace MsSqlDependancyBrowser
 
                     Console.WriteLine(output);
 
-                    output.Close(); 
+                    output.Close();
+
+                    return;
                 }
 
-                web.Stop();
-
-                Console.ReadKey();
+                if (context.Request.Url.AbsolutePath == "/connect" && context.Request.HttpMethod == "POST")
+                {
+                    using (var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding))
+                    {
+                        connectionString = reader.ReadToEnd();
+                        Console.WriteLine(connectionString);
+                    }
+                    context.Response.Headers.Clear();
+                    context.Response.SendChunked = false;
+                    context.Response.StatusCode = 200;
+                    context.Response.Headers.Add("Server", String.Empty);
+                    context.Response.Headers.Add("Date", String.Empty);
+                    context.Response.Close();
+                }
             }
 
             static string requestDatabase(string spName)
             {
-                string connectionString = @"Data Source=PC;Initial Catalog=test;Integrated Security=True";
                 string queryQbjectInfo = Resources.queryObjectInfo;
                 string queryObjectDependancies = Resources.queryObjectDependancies;
                 string queryTableXml = Resources.queryTableXml;
