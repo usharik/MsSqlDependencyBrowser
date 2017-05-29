@@ -2,11 +2,26 @@
 <head>
     <title>{0}</title>
     <script type="text/javascript" src="postConnectionString.js"></script>
+    <script type="text/javascript" src="modalDialog.js"></script>
     <link rel="stylesheet" href="main.css">
 </head>
     <body>
-        <button id="btConnect" onclick="postConnectionString()">Connect</button>
-        <input id="connectionString" value="{1}" size="100" />
+        <div id="params">
+            <button id="btConnectDialog" onclick="openModal()">Connect</button>
+            <div class="inline" id="connectionString" size="100">{1}</div>
+        </div>
         <pre>{2}</pre>
+
+        <div class="overlay is-hidden" id="overlay">
+            <div class="modal-content">
+                <h3>Connection to SQL Server <small id="errorMessage"></small></h3>                
+                <label for="server">Server</label>
+                <input id="server" value="" size="50" /><br />
+                <label for="database">Database</label>
+                <input id="database" value="" size="50" /><br /><br />
+                <button id="btCancel" onclick="closeModal()">Cancel</button>
+                <button id="btConnect" onclick="postConnectionString()">Connect</button>                
+            </div>
+        </div>
     </body>
-</html >
+</html>

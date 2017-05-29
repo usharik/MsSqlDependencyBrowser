@@ -10,6 +10,7 @@ using SqlScriptParser;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace MsSqlDependancyBrowser
 {
@@ -22,7 +23,9 @@ namespace MsSqlDependancyBrowser
             static XslCompiledTransform xslTranCompiler;
             const string objectNameParam = "sp";
             const string clientUrl = "http://localhost:8085/";
-            static string connectionString = @"Data Source=PC;Initial Catalog=test;Integrated Security=True";
+            const string connectionStringTemplate = @"Data Source={0};Initial Catalog={1};Integrated Security=True";
+            static string connectionString;
+            static string jsonConnectionParams;
             static Dictionary<string, HttpRequestHandler> url2requestHandlerMapping = new Dictionary<string, HttpRequestHandler>();
 
             static void Main()
@@ -38,6 +41,7 @@ namespace MsSqlDependancyBrowser
                 url2requestHandlerMapping.Add("/connect", handleConnectRequest);
                 url2requestHandlerMapping.Add("/main.css", (context) => sendStaticResource(context.Response, Resources.main_css));
                 url2requestHandlerMapping.Add("/postConnectionString.js", (context) => sendStaticResource(context.Response, Resources.postConnectionString_js));
+                url2requestHandlerMapping.Add("/modalDialog.js", (context) => sendStaticResource(context.Response, Resources.modalDialog_js));
 
                 var web = new HttpListener();
                 web.Prefixes.Add(clientUrl);
@@ -68,7 +72,6 @@ namespace MsSqlDependancyBrowser
                 if (url2requestHandlerMapping.TryGetValue(context.Request.Url.AbsolutePath, out httpRequestHandler))
                 {
                     httpRequestHandler(context);
-                    return;
                 }
             }
 
@@ -77,6 +80,11 @@ namespace MsSqlDependancyBrowser
                 if (context.Request.HttpMethod != "GET")
                 {
                     sendAnswerWithCode(context.Response, 405);
+                    return;
+                }
+                if (connectionString == null)
+                {
+                    sendStaticResource(context.Response, string.Format(Resources.index_html, "Not connected", "", "SQL Server Not connected. Press 'Connect' button."));
                     return;
                 }
                 string result = "";
@@ -90,7 +98,7 @@ namespace MsSqlDependancyBrowser
                     }
                     Console.WriteLine($"key {key} value {context.Request.QueryString[key]}");
                 }
-                sendStaticResource(context.Response, string.Format(Resources.index_html, spName, connectionString, result));
+                sendStaticResource(context.Response, string.Format(Resources.index_html, spName, jsonConnectionParams, result));
             }
 
             static void handleConnectRequest(HttpListenerContext context)
@@ -102,8 +110,21 @@ namespace MsSqlDependancyBrowser
                 }
                 using (var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding))
                 {
-                    connectionString = reader.ReadToEnd();
-                    Console.WriteLine(connectionString);
+                    var tmpJsonConnectionParams = reader.ReadToEnd();
+                    dynamic connParams = JObject.Parse(tmpJsonConnectionParams);                   
+                    var tmpConnectionString = string.Format(connectionStringTemplate, connParams.server, connParams.database);
+                    Console.WriteLine(tmpConnectionString);
+                    try
+                    {
+                        using (var sqlConn = new SqlConnection(tmpConnectionString)) sqlConn.Open();
+                    } catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        sendAnswerWithCode(context.Response, 406);
+                        return;
+                    }
+                    connectionString = tmpConnectionString;
+                    jsonConnectionParams = tmpJsonConnectionParams;
                     sendAnswerWithCode(context.Response, 200);
                 }
             }
@@ -197,7 +218,6 @@ namespace MsSqlDependancyBrowser
                 var output = response.OutputStream;
                 output.Write(buffer, 0, buffer.Length);
                 output.Close();
-                return;
             }
 
             static void sendAnswerWithCode(HttpListenerResponse response, int statusCode)

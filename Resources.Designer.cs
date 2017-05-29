@@ -64,15 +64,19 @@ namespace MsSqlDependancyBrowser {
         ///   Ищет локализованную строку, похожую на &lt;html&gt;
         ///&lt;head&gt;
         ///    &lt;title&gt;{0}&lt;/title&gt;
-        ///    &lt;script&gt;{1}&lt;/script&gt;
-        ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;ie.css&quot;&gt;
+        ///    &lt;script type=&quot;text/javascript&quot; src=&quot;postConnectionString.js&quot;&gt;&lt;/script&gt;
+        ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;main.css&quot;&gt;
         ///&lt;/head&gt;
-        ///&lt;body&gt;
-        ///    &lt;button id=&quot;btConnect&quot; onclick=&quot;postConnectionString()&quot;&gt;Connect&lt;/button&gt;
-        ///    &lt;input id=&quot;connectionString&quot; value=&quot;{2}&quot; size=&quot;100&quot;/&gt;
-        ///    &lt;pre&gt;{3}&lt;/pre&gt;
-        ///&lt;/body&gt;
-        ///&lt;/html&gt;.
+        ///    &lt;body&gt;
+        ///        &lt;div id=&quot;params&quot;&gt;
+        ///            &lt;button id=&quot;btConnect&quot; onclick=&quot;openModal()&quot;&gt;Connect&lt;/button&gt;
+        ///            &lt;input id=&quot;connectionString&quot; value=&quot;{1}&quot; size=&quot;100&quot; /&gt;
+        ///        &lt;/div&gt;
+        ///        &lt;pre&gt;{2}&lt;/pre&gt;
+        ///
+        ///        &lt;div class=&quot;overlay is-hidden&quot; id=&quot;overlay&quot;&gt;
+        ///            &lt;div class=&quot;modal-content&quot;&gt;
+        ///                &lt;span c [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string index_html {
             get {
@@ -92,11 +96,58 @@ namespace MsSqlDependancyBrowser {
         /// <summary>
         ///   Ищет локализованную строку, похожую на body
         ///{
-        ///}.
+        ///    overflow: hidden;
+        ///}
+        ///
+        ///#params
+        ///{
+        ///    width: 100%;
+        ///    height: 35px;
+        ///    white-space: nowrap;
+        ///}
+        ///
+        ///pre
+        ///{
+        ///    width: 99.5%;
+        ///    height: 90%;
+        ///    overflow: scroll;
+        ///}
+        ///
+        ///.is-hidden {
+        ///    display: none;
+        ///}
+        ///
+        ///// for modal connection dialog
+        ///.button-close {
+        ///    display: inline-block;
+        ///    width: 16px;
+        ///    height: 16px;
+        ///    position: absolute;
+        ///    top: 10px;
+        ///    right: 10px;
+        ///    cursor: pointer;
+        ///    background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAA [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string main_css {
             get {
                 return ResourceManager.GetString("main_css", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на function openModal() {
+        ///    var overlay = document.getElementById(&apos;overlay&apos;);
+        ///    overlay.classList.remove(&quot;is-hidden&quot;);
+        ///}
+        ///
+        ///function closeModal() {
+        ///    var overlay = document.getElementById(&apos;overlay&apos;);
+        ///    overlay.classList.add(&quot;is-hidden&quot;);
+        ///}.
+        /// </summary>
+        internal static string modalDialog_js {
+            get {
+                return ResourceManager.GetString("modalDialog_js", resourceCulture);
             }
         }
         
