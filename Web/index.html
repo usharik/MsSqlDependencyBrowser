@@ -1,11 +1,12 @@
 ﻿<html>
 <head>
     <title>{0}</title>
-    <script>{1}</script>
+    <script type="text/javascript" src="postConnectionString.js"></script>
+    <link rel="stylesheet" href="main.css">
 </head>
-<body>
-    <button id="btConnect" onclick="postConnectionString()">Connect</button>
-    <input id="connectionString" value="{2}" size="100"/>
-    <pre>{3}</pre>
-</body>
-</html>
+    <body>
+        <button id="btConnect" onclick="postConnectionString()">Connect</button>
+        <input id="connectionString" value="{1}" size="100" />
+        <pre>{2}</pre>
+    </body>
+</html >

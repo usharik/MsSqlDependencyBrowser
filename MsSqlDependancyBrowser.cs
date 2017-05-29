@@ -17,12 +17,13 @@ namespace MsSqlDependancyBrowser
     {
         static class MainClass
         {
+            delegate void HttpRequestHandler(HttpListenerContext context);
             static HashSet<string> keywords;
             static XslCompiledTransform xslTranCompiler;
             const string objectNameParam = "sp";
-            const string clientUrl = "http://localhost:8080/";
-            const string connectUrl = clientUrl + "connect/";
+            const string clientUrl = "http://localhost:8085/";
             static string connectionString = @"Data Source=PC;Initial Catalog=test;Integrated Security=True";
+            static Dictionary<string, HttpRequestHandler> url2requestHandlerMapping = new Dictionary<string, HttpRequestHandler>();
 
             static void Main()
             {
@@ -30,22 +31,20 @@ namespace MsSqlDependancyBrowser
 
                 xslTranCompiler = new XslCompiledTransform();
                 var xslDoc = new XmlDocument();
-                xslDoc.LoadXml(Resources.table2html);
+                xslDoc.LoadXml(Resources.table2html_xslt);
                 xslTranCompiler.Load(xslDoc);
 
+                url2requestHandlerMapping.Add("/", handleIndexPageRequest);
+                url2requestHandlerMapping.Add("/connect", handleConnectRequest);
+                url2requestHandlerMapping.Add("/main.css", (context) => sendStaticResource(context.Response, Resources.main_css));
+                url2requestHandlerMapping.Add("/postConnectionString.js", (context) => sendStaticResource(context.Response, Resources.postConnectionString_js));
+
                 var web = new HttpListener();
-
                 web.Prefixes.Add(clientUrl);
-                web.Prefixes.Add(connectUrl);
-
                 Console.WriteLine("Listening..");
-
                 web.Start();
-
                 Listner(web);
-
                 Console.ReadKey();
-
                 web.Stop();
             }
 
@@ -54,70 +53,66 @@ namespace MsSqlDependancyBrowser
                 for (;;)
                 {
                     var context = await web.GetContextAsync();
-                    Task.Factory.StartNew(() => processRequest(context));
+                    Task.Factory.StartNew(() => processHttpRequest(context));
                 }
             }
 
-            static void processRequest(HttpListenerContext context)
+            static void processHttpRequest(HttpListenerContext context)
             {
                 var response = context.Response;
-                Console.WriteLine($"Thread ID { Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine($"Thread ID {Thread.CurrentThread.ManagedThreadId}");
                 Console.WriteLine(context.Request.RawUrl);
                 Console.WriteLine(context.Request.HttpMethod);
 
-                if (context.Request.Url.AbsolutePath == "/" && context.Request.HttpMethod == "GET")
+                HttpRequestHandler httpRequestHandler;
+                if (url2requestHandlerMapping.TryGetValue(context.Request.Url.AbsolutePath, out httpRequestHandler))
                 {
-                    string result = "";
-                    string spName = "";
-                    foreach (string key in context.Request.QueryString.Keys)
-                    {
-                        if (key == objectNameParam)
-                        {
-                            spName = context.Request.QueryString[key];
-                            result = requestDatabase(spName);
-                        }
-
-                        Console.WriteLine($"key {key} value {context.Request.QueryString[key]}");
-                    }
-
-                    string responseString = string.Format(Resources.index, spName, Resources.postConnectionString, connectionString, result);
-
-                    var buffer = Encoding.UTF8.GetBytes(responseString);
-
-                    response.ContentLength64 = buffer.Length;
-
-                    var output = response.OutputStream;
-
-                    output.Write(buffer, 0, buffer.Length);
-
-                    Console.WriteLine(output);
-
-                    output.Close();
-
+                    httpRequestHandler(context);
                     return;
                 }
+            }
 
-                if (context.Request.Url.AbsolutePath == "/connect" && context.Request.HttpMethod == "POST")
+            static void handleIndexPageRequest(HttpListenerContext context)
+            {
+                if (context.Request.HttpMethod != "GET")
                 {
-                    using (var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding))
+                    sendAnswerWithCode(context.Response, 405);
+                    return;
+                }
+                string result = "";
+                string spName = "";
+                foreach (string key in context.Request.QueryString.Keys)
+                {
+                    if (key == objectNameParam)
                     {
-                        connectionString = reader.ReadToEnd();
-                        Console.WriteLine(connectionString);
+                        spName = context.Request.QueryString[key];
+                        result = requestDatabase(spName);
                     }
-                    context.Response.Headers.Clear();
-                    context.Response.SendChunked = false;
-                    context.Response.StatusCode = 200;
-                    context.Response.Headers.Add("Server", String.Empty);
-                    context.Response.Headers.Add("Date", String.Empty);
-                    context.Response.Close();
+                    Console.WriteLine($"key {key} value {context.Request.QueryString[key]}");
+                }
+                sendStaticResource(context.Response, string.Format(Resources.index_html, spName, connectionString, result));
+            }
+
+            static void handleConnectRequest(HttpListenerContext context)
+            {
+                if (context.Request.HttpMethod != "POST")
+                {
+                    sendAnswerWithCode(context.Response, 405);
+                    return;
+                }
+                using (var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding))
+                {
+                    connectionString = reader.ReadToEnd();
+                    Console.WriteLine(connectionString);
+                    sendAnswerWithCode(context.Response, 200);
                 }
             }
 
             static string requestDatabase(string spName)
             {
-                string queryQbjectInfo = Resources.queryObjectInfo;
-                string queryObjectDependancies = Resources.queryObjectDependancies;
-                string queryTableXml = Resources.queryTableXml;
+                string queryQbjectInfo = Resources.queryObjectInfo_sql;
+                string queryObjectDependancies = Resources.queryObjectDependancies_sql;
+                string queryTableXml = Resources.queryTableXml_sql;
 
                 try
                 {
@@ -193,6 +188,27 @@ namespace MsSqlDependancyBrowser
                     Console.WriteLine($"Exception: {ex}");
                     return $"Exception: {ex}";
                 }
+            }
+
+            static void sendStaticResource(HttpListenerResponse response, string resourceText)
+            {
+                var buffer = Encoding.UTF8.GetBytes(resourceText);
+                response.ContentLength64 = buffer.Length;
+                var output = response.OutputStream;
+                output.Write(buffer, 0, buffer.Length);
+                output.Close();
+                return;
+            }
+
+            static void sendAnswerWithCode(HttpListenerResponse response, int statusCode)
+            {
+                response.Headers.Clear();
+                response.SendChunked = false;
+                response.StatusCode = statusCode;
+                response.Headers.Add("Server", String.Empty);
+                response.Headers.Add("Date", String.Empty);
+                response.Close();
+                return;
             }
         }
     }

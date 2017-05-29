@@ -65,17 +65,18 @@ namespace MsSqlDependancyBrowser {
         ///&lt;head&gt;
         ///    &lt;title&gt;{0}&lt;/title&gt;
         ///    &lt;script&gt;{1}&lt;/script&gt;
+        ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;ie.css&quot;&gt;
         ///&lt;/head&gt;
         ///&lt;body&gt;
-        ///    &lt;button id=&quot;connect&quot; onclick=&quot;postConnectionString()&quot;&gt;Connect&lt;/button&gt;
-        ///    &lt;input id=&quot;connectionString&quot; /&gt;
-        ///    &lt;pre&gt;{2}&lt;/pre&gt;
+        ///    &lt;button id=&quot;btConnect&quot; onclick=&quot;postConnectionString()&quot;&gt;Connect&lt;/button&gt;
+        ///    &lt;input id=&quot;connectionString&quot; value=&quot;{2}&quot; size=&quot;100&quot;/&gt;
+        ///    &lt;pre&gt;{3}&lt;/pre&gt;
         ///&lt;/body&gt;
         ///&lt;/html&gt;.
         /// </summary>
-        internal static string index {
+        internal static string index_html {
             get {
-                return ResourceManager.GetString("index", resourceCulture);
+                return ResourceManager.GetString("index_html", resourceCulture);
             }
         }
         
@@ -89,23 +90,35 @@ namespace MsSqlDependancyBrowser {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на body
+        ///{
+        ///}.
+        /// </summary>
+        internal static string main_css {
+            get {
+                return ResourceManager.GetString("main_css", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на function postConnectionString() {
         ///    var xhr = new XMLHttpRequest();
+        ///    xhr.open(&apos;POST&apos;, &apos;/connect&apos;);
         ///    xhr.setRequestHeader(&apos;Content-Type&apos;, &apos;application/text&apos;)
-        ///    xhr.open(&apos;POST&apos;, &apos;/connect&apos;, true);
         ///    xhr.onreadystatechange = function () {
         ///        if (xhr.readyState == 4) {
         ///            if (xhr.status == 200) {
-        ///                alert(xhr.responseText);
+        ///                location.reload();
         ///            }
         ///        }
         ///    };
-        ///    xhr.send(document.getElementById(&quot;connectionString&quot;).value);
-        ///}.
+        ///    document.getElementById(&quot;btConnect&quot;).innerHTML = &quot;Wait for connection&quot;;
+        ///    document.getElementById(&quot;btConnect&quot;).disabled = true;
+        ///    xhr.send(docume [остаток строки не уместился]&quot;;.
         /// </summary>
-        internal static string postConnectionString {
+        internal static string postConnectionString_js {
             get {
-                return ResourceManager.GetString("postConnectionString", resourceCulture);
+                return ResourceManager.GetString("postConnectionString_js", resourceCulture);
             }
         }
         
@@ -119,9 +132,9 @@ namespace MsSqlDependancyBrowser {
         ///    ) A
         ///ORDER BY LEN(A.referenced_entity_name) desc;.
         /// </summary>
-        internal static string queryObjectDependancies {
+        internal static string queryObjectDependancies_sql {
             get {
-                return ResourceManager.GetString("queryObjectDependancies", resourceCulture);
+                return ResourceManager.GetString("queryObjectDependancies_sql", resourceCulture);
             }
         }
         
@@ -134,9 +147,9 @@ namespace MsSqlDependancyBrowser {
         ///INNER JOIN sys.schemas C ON A.schema_id = C.schema_id
         ///WHERE A.name = @objectName;.
         /// </summary>
-        internal static string queryObjectInfo {
+        internal static string queryObjectInfo_sql {
             get {
-                return ResourceManager.GetString("queryObjectInfo", resourceCulture);
+                return ResourceManager.GetString("queryObjectInfo_sql", resourceCulture);
             }
         }
         
@@ -151,9 +164,9 @@ namespace MsSqlDependancyBrowser {
         ///	WHERE [table].name = @objectName
         ///	FOR XML PATH(&apos;column&apos;), ROOT(&apos;table&apos;);.
         /// </summary>
-        internal static string queryTableXml {
+        internal static string queryTableXml_sql {
             get {
-                return ResourceManager.GetString("queryTableXml", resourceCulture);
+                return ResourceManager.GetString("queryTableXml_sql", resourceCulture);
             }
         }
         
@@ -173,9 +186,9 @@ namespace MsSqlDependancyBrowser {
         ///      &lt;xsl:for-each select=&quot;table/column&quot;&gt;
         ///        &lt;t [остаток строки не уместился]&quot;;.
         /// </summary>
-        internal static string table2html {
+        internal static string table2html_xslt {
             get {
-                return ResourceManager.GetString("table2html", resourceCulture);
+                return ResourceManager.GetString("table2html_xslt", resourceCulture);
             }
         }
     }
