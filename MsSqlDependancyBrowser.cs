@@ -39,9 +39,9 @@ namespace MsSqlDependancyBrowser
 
                 url2requestHandlerMapping.Add("/", handleIndexPageRequest);
                 url2requestHandlerMapping.Add("/connect", handleConnectRequest);
-                url2requestHandlerMapping.Add("/main.css", (context) => sendStaticResource(context.Response, Resources.main_css));
-                url2requestHandlerMapping.Add("/postConnectionString.js", (context) => sendStaticResource(context.Response, Resources.postConnectionString_js));
-                url2requestHandlerMapping.Add("/modalDialog.js", (context) => sendStaticResource(context.Response, Resources.modalDialog_js));
+                url2requestHandlerMapping.Add("/main.css", (context) => sendStaticResource(context.Response, Resources.main_css, "text/css"));
+                url2requestHandlerMapping.Add("/postConnectionString.js", (context) => sendStaticResource(context.Response, Resources.postConnectionString_js, "application/javascript"));
+                url2requestHandlerMapping.Add("/modalDialog.js", (context) => sendStaticResource(context.Response, Resources.modalDialog_js, "application/javascript"));
 
                 var web = new HttpListener();
                 web.Prefixes.Add(clientUrl);
@@ -64,15 +64,25 @@ namespace MsSqlDependancyBrowser
             static void processHttpRequest(HttpListenerContext context)
             {
                 var response = context.Response;
-                Console.WriteLine($"Thread ID {Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine($"Thread ID {Thread.CurrentThread.ManagedThreadId} start");
                 Console.WriteLine(context.Request.RawUrl);
                 Console.WriteLine(context.Request.HttpMethod);
 
                 HttpRequestHandler httpRequestHandler;
                 if (url2requestHandlerMapping.TryGetValue(context.Request.Url.AbsolutePath, out httpRequestHandler))
                 {
-                    httpRequestHandler(context);
+                    try
+                    {
+                        httpRequestHandler(context);
+                    } catch (Exception ex)
+                    {
+                        Console.WriteLine($"Exception: {ex}");
+                    }                    
+                } else
+                {
+                    sendAnswerWithCode(context.Response, 404);
                 }
+                Console.WriteLine($"Thread ID {Thread.CurrentThread.ManagedThreadId} stop");
             }
 
             static void handleIndexPageRequest(HttpListenerContext context)
@@ -84,7 +94,7 @@ namespace MsSqlDependancyBrowser
                 }
                 if (connectionString == null)
                 {
-                    sendStaticResource(context.Response, string.Format(Resources.index_html, "Not connected", "", "SQL Server Not connected. Press 'Connect' button."));
+                    sendStaticResource(context.Response, string.Format(Resources.index_html, "Not connected", "", "SQL Server Not connected. Press 'Connect' button."), "text/html");
                     return;
                 }
                 string result = "";
@@ -98,7 +108,7 @@ namespace MsSqlDependancyBrowser
                     }
                     Console.WriteLine($"key {key} value {context.Request.QueryString[key]}");
                 }
-                sendStaticResource(context.Response, string.Format(Resources.index_html, spName, jsonConnectionParams, result));
+                sendStaticResource(context.Response, string.Format(Resources.index_html, spName, jsonConnectionParams, result), "text/html");
             }
 
             static void handleConnectRequest(HttpListenerContext context)
@@ -162,19 +172,15 @@ namespace MsSqlDependancyBrowser
                             sqlCmd = new SqlCommand(queryTableXml, sqlConn);
                             sqlCmd.Parameters.Add("@objectName", SqlDbType.NVarChar);
                             sqlCmd.Parameters["@objectName"].Value = spName;
-
-                            string tableInfoXml = "";
-                            using (SqlDataReader dr = sqlCmd.ExecuteReader())
+                            var xmlSource = new XmlDocument();
+                            using (XmlReader dr = sqlCmd.ExecuteXmlReader())
                             {
                                 if (dr.Read())
                                 {
-                                    tableInfoXml = dr.GetString(0);
+                                    xmlSource.Load(dr);
                                 }
-                            }
-
-                            var xmlSource = new XmlDocument();
+                            }                            
                             var htmlDest = new StringBuilder();
-                            xmlSource.LoadXml(tableInfoXml);
                             xslTranCompiler.Transform(xmlSource, XmlWriter.Create(htmlDest));
                             return htmlDest.ToString();
                         }
@@ -211,10 +217,11 @@ namespace MsSqlDependancyBrowser
                 }
             }
 
-            static void sendStaticResource(HttpListenerResponse response, string resourceText)
+            static void sendStaticResource(HttpListenerResponse response, string resourceText, string mime)
             {
                 var buffer = Encoding.UTF8.GetBytes(resourceText);
                 response.ContentLength64 = buffer.Length;
+                response.Headers.Add("Content-Type", mime);
                 var output = response.OutputStream;
                 output.Write(buffer, 0, buffer.Length);
                 output.Close();

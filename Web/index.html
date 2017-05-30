@@ -8,9 +8,10 @@
     <body>
         <div id="params">
             <button id="btConnectDialog" onclick="openModal()">Connect</button>
+            <button id="btSelectAllText" onclick="selectAllText('text')">Select all</button>
             <div class="inline" id="connectionString" size="100">{1}</div>
         </div>
-        <pre>{2}</pre>
+        <pre id="text">{2}</pre>
 
         <div class="overlay is-hidden" id="overlay">
             <div class="modal-content">
