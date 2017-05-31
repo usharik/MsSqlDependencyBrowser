@@ -47,6 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MsSqlDependancyBrowserHttpServer.cs" />
+    <Compile Include="RequestMapping.cs" />
+    <Compile Include="SimpleHttpServer.cs" />
     <Compile Include="SqlScriptParser.cs" />
     <Compile Include="MsSqlDependancyBrowser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
