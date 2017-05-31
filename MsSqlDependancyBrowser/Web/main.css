@@ -49,17 +49,13 @@ pre
 }
 
 .modal-content label {
-    width: 30%;
+    width: 20%;
     text-align: right;
 }
 
 .modal-content label + input {
-    width: 30%;
-    margin: 0 30% 0 4%;
-}
-
-.modal-content input + input {
-    float: right;
+    width: 70%;
+    margin-left: 4%;
 }
 
 .modal-content button {
