@@ -97,7 +97,7 @@ publish/
 
 # NuGet Packages Directory
 ## TODO: If you have NuGet Package Restore enabled, uncomment the next line
-#packages/
+packages/
 
 # Windows Azure Build Output
 csx
@@ -158,3 +158,6 @@ $RECYCLE.BIN/
 /.gitignore
 /.gitignore
 /.gitattributes
+/packages/Newtonsoft.Json.10.0.2
+/packages/Newtonsoft.Json.10.0.2
+/packages/Newtonsoft.Json.10.0.2
