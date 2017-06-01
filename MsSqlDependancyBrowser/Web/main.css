@@ -66,4 +66,6 @@ pre
 
 .modal-content #errorMessage {
     color: red;
+    display: inline-block;
+    margin-top: 10px;
 }

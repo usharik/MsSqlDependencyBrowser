@@ -7,7 +7,8 @@
             if (xhr.status == 200) {
                 location.reload();
             } else if (xhr.status == 406) {
-                document.getElementById("errorMessage").innerHTML = "Connection error.";
+                var error = JSON.parse(xhr.response);
+                document.getElementById("errorMessage").innerHTML = error.errorMessage;
                 document.getElementById("btConnect").disabled = false;
                 document.getElementById("btCancel").disabled = false;
             }

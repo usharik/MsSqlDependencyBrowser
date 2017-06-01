@@ -15,13 +15,14 @@
 
         <div class="overlay is-hidden" id="overlay">
             <div class="modal-content">
-                <h3>Connection to SQL Server <small id="errorMessage"></small></h3>                
+                <h3>Connection to SQL Server</h3>                
                 <label for="server">Server</label>
                 <input id="server" value="" size="50" /><br />
                 <label for="database">Database</label>
                 <input id="database" value="" size="50" /><br /><br />
                 <button id="btCancel" onclick="closeModal()">Cancel</button>
-                <button id="btConnect" onclick="postConnectionString()">Connect</button>                
+                <button id="btConnect" onclick="postConnectionString()">Connect</button>
+                <div id="errorMessage"></div>
             </div>
         </div>
     </body>

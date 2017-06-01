@@ -10,6 +10,7 @@
 }
 
 function closeModal() {
+    document.getElementById("errorMessage").innerHTML = "";
     var overlay = document.getElementById('overlay');
     overlay.classList.add("is-hidden");
 }

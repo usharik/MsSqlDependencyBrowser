@@ -80,7 +80,7 @@ namespace MsSqlDependancyBrowser
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    sendAnswerWithCode(context.Response, 406);
+                    sendStaticResourceWithCode(context.Response, JObject.FromObject(new { errorMessage = ex.Message}).ToString(), "application/json", 406);
                     return;
                 }
                 connectionString = tmpConnectionString;

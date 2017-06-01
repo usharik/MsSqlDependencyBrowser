@@ -75,14 +75,20 @@ namespace MsSqlDependancyBrowser
             Console.WriteLine($"Thread ID {Thread.CurrentThread.ManagedThreadId} stop");
         }
 
-        protected static void sendStaticResource(HttpListenerResponse response, string resourceText, string mime)
+        protected static void sendStaticResourceWithCode(HttpListenerResponse response, string resourceText, string mime, int statusCode)
         {
             var buffer = Encoding.UTF8.GetBytes(resourceText);
             response.ContentLength64 = buffer.Length;
             response.Headers.Add("Content-Type", mime);
+            response.StatusCode = statusCode;
             var output = response.OutputStream;
             output.Write(buffer, 0, buffer.Length);
             output.Close();
+        }
+
+        protected static void sendStaticResource(HttpListenerResponse response, string resourceText, string mime)
+        {
+            sendStaticResourceWithCode(response, resourceText, mime, 200);
         }
 
         protected static void sendAnswerWithCode(HttpListenerResponse response, int statusCode)
