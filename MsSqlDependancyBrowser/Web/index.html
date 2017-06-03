@@ -13,11 +13,15 @@
             <div class="inline" id="connectionString" size="100">{1}</div>
         </div>
         <div id="objectNavigator">
+            <label for="objectTypeComboBox"><small>Object type</small></label>
             <select id="objectTypeComboBox" onchange="objectTypeComboBoxChange()">
                 <option value="empty">Empty</option>
             </select>
-            <ol id="objectList">
-            </ol>
+            <label for="objFilter"><small>Object filter</small></label>
+            <input id="objFilter" value="" size="20" oninput="onObjFilterChange(event)"/>
+            <div id="objectListContainer">
+                <ol id="objectList"></ol>
+            </div>            
         </div>
         <pre id="text">{2}</pre>
 

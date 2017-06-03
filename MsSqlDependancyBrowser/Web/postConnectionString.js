@@ -1,7 +1,12 @@
 ﻿document.addEventListener('DOMContentLoaded', onDocumentReady, false);
+window.addEventListener('popstate', reloadPageOnBackButtonPress);
 
 function onDocumentReady() {
     buildObjectListPanel();
+}
+
+function reloadPageOnBackButtonPress(event) {
+    location.reload();
 }
 
 function postConnectionString() {
@@ -42,6 +47,8 @@ function selectAllText(containerid) {
     }
 }
 
+var currentObjectList;
+
 function buildObjectListPanel() {
     var comboBoxItems = allServerObjects.map(function (objList) {
         return "<option value='" + objList.type_desc + "'>" + objList.type_desc + "</option>";
@@ -53,12 +60,12 @@ function buildObjectListPanel() {
 function objectTypeComboBoxChange() {
     var comboBox = document.getElementById("objectTypeComboBox");
     var sel_type_desc = comboBox.options[comboBox.selectedIndex].value;
-    var objectList = allServerObjects.filter(function (obj) {
+    currentObjectList = allServerObjects.filter(function (obj) {
         return obj.type_desc == sel_type_desc;
-    });
+    })[0];
 
     document.getElementById("objectList").innerHTML =
-        objectList[0].objects.map(function (obj) {
+        currentObjectList.objects.map(function (obj) {
         return "<li>" + buildServerObjectLink(obj) + "</li>";
         }).join('');
 }
@@ -76,9 +83,27 @@ function getObjText(event) {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
                 document.getElementById("text").innerHTML = xhr.response;
+                history.pushState({}, link.textContent, "?sp=" + link.textContent);
             }
         }
     };
     xhr.send();
     event.preventDefault();
+}
+
+function onObjFilterChange(event) {
+    template = event.target.value;
+    if (template == "") {
+        objectTypeComboBoxChange();
+        return;
+    }
+
+    var objectList = currentObjectList.objects.filter(function (obj) {
+        return obj.toUpperCase().indexOf(template.toUpperCase()) != -1;
+    });
+
+    document.getElementById("objectList").innerHTML =
+        objectList.map(function (obj) {
+            return "<li>" + buildServerObjectLink(obj) + "</li>";
+        }).join('');
 }

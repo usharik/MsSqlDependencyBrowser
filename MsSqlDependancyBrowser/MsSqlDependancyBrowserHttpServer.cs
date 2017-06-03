@@ -73,7 +73,10 @@ namespace MsSqlDependancyBrowser
                             curr_type_desc = dr.GetString(0);
                             serverObjects.Add(dr.GetString(1));
                         }
-                        allServerObjects.Add(new { type_desc = curr_type_desc, objects = serverObjects});
+                        if (serverObjects.Count > 0)
+                        {
+                            allServerObjects.Add(new { type_desc = curr_type_desc, objects = serverObjects });
+                        }
                     } while (dr.NextResult());
                 }
                 result = "var allServerObjects = " + JArray.FromObject(allServerObjects).ToString();

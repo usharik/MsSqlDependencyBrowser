@@ -1,6 +1,8 @@
 ﻿body
 {
     overflow: hidden;
+    margin-right: 0;
+    margin-bottom: 0;
 }
 
 #params {
@@ -11,29 +13,52 @@
 
 #objectNavigator {
     width: 15%;
-    height: 100%;
+    height: calc(100% - 35px);
     white-space: nowrap;
     float: left;
     outline: 1px solid;
+    box-sizing: border-box;
 }
 
-#objectTypeComboBox {
+#objectTypeComboBox, #objFilter {
+    width: 95%;
+    float: left;
+    margin-left: 3px;
+    margin-right: 3px;
+    box-sizing: border-box;
+}
+
+div#objectNavigator label {
     width: 100%;
+    float: left;
+    margin-top: 3px;
+    padding-left: 3px;
+    box-sizing: border-box;
 }
 
 #objectList {
-    width: 100%;
-    overflow: auto;
+    width: 75%;
     list-style-type: none;
     padding: 0 0 0 0;
+    margin-left: 3px;
+    box-sizing: border-box;
+}
+
+#objectListContainer {
+    width: 100%;
+    height: calc(100% - 77px);
+    float: left;
+    overflow: auto;
+    box-sizing: border-box;
 }
 
 pre {
-    width: 84%;
-    height: 90%;
+    width: 85%;
+    height: calc(100% - 49px);
     overflow: scroll;
     float: right;
-    margin: 5px 0 0 0;
+    padding: 5px;
+    box-sizing: border-box;
 }
 
 .is-hidden {
