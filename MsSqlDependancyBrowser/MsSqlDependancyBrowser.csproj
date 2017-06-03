@@ -70,6 +70,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SqlScripts\queryAllObjects.sql" />
     <Content Include="SqlScripts\queryObjectInfo.sql" />
     <Content Include="SqlScripts\queryObjectDependancies.sql" />
     <Content Include="SqlScripts\queryTableXml.sql" />

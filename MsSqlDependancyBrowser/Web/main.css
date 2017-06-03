@@ -3,18 +3,37 @@
     overflow: hidden;
 }
 
-#params
-{
+#params {
     width: 100%;
     height: 35px;
     white-space: nowrap;
 }
 
-pre
-{
-    width: 99.5%;
+#objectNavigator {
+    width: 15%;
+    height: 100%;
+    white-space: nowrap;
+    float: left;
+    outline: 1px solid;
+}
+
+#objectTypeComboBox {
+    width: 100%;
+}
+
+#objectList {
+    width: 100%;
+    overflow: auto;
+    list-style-type: none;
+    padding: 0 0 0 0;
+}
+
+pre {
+    width: 84%;
     height: 90%;
     overflow: scroll;
+    float: right;
+    margin: 5px 0 0 0;
 }
 
 .is-hidden {

@@ -65,18 +65,14 @@ namespace MsSqlDependancyBrowser {
         ///&lt;head&gt;
         ///    &lt;title&gt;{0}&lt;/title&gt;
         ///    &lt;script type=&quot;text/javascript&quot; src=&quot;postConnectionString.js&quot;&gt;&lt;/script&gt;
+        ///    &lt;script type=&quot;text/javascript&quot; src=&quot;modalDialog.js&quot;&gt;&lt;/script&gt;
+        ///    &lt;script type=&quot;text/javascript&quot; src=&quot;serverObjectList.js&quot;&gt;&lt;/script&gt;
         ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;main.css&quot;&gt;
         ///&lt;/head&gt;
         ///    &lt;body&gt;
         ///        &lt;div id=&quot;params&quot;&gt;
-        ///            &lt;button id=&quot;btConnect&quot; onclick=&quot;openModal()&quot;&gt;Connect&lt;/button&gt;
-        ///            &lt;input id=&quot;connectionString&quot; value=&quot;{1}&quot; size=&quot;100&quot; /&gt;
-        ///        &lt;/div&gt;
-        ///        &lt;pre&gt;{2}&lt;/pre&gt;
-        ///
-        ///        &lt;div class=&quot;overlay is-hidden&quot; id=&quot;overlay&quot;&gt;
-        ///            &lt;div class=&quot;modal-content&quot;&gt;
-        ///                &lt;span c [остаток строки не уместился]&quot;;.
+        ///            &lt;button id=&quot;btConnectDialog&quot; onclick=&quot;openModal()&quot;&gt;Connect&lt;/button&gt;
+        ///            &lt;button id=&quot;btSelectAllText&quot; onclick=&quot;selectAllText(&apos;text&apos;)&quot;&gt;Select all [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string index_html {
             get {
@@ -106,27 +102,36 @@ namespace MsSqlDependancyBrowser {
         ///    white-space: nowrap;
         ///}
         ///
+        ///#objectList {
+        ///    width: 15%;
+        ///    height: 100%;
+        ///    white-space: nowrap;
+        ///    float: left;
+        ///}
+        ///
         ///pre
         ///{
-        ///    width: 99.5%;
+        ///    width: 85%;
         ///    height: 90%;
         ///    overflow: scroll;
+        ///    float: right;
         ///}
         ///
         ///.is-hidden {
         ///    display: none;
         ///}
         ///
-        ///// for modal connection dialog
-        ///.button-close {
-        ///    display: inline-block;
-        ///    width: 16px;
-        ///    height: 16px;
-        ///    position: absolute;
-        ///    top: 10px;
-        ///    right: 10px;
-        ///    cursor: pointer;
-        ///    background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAA [остаток строки не уместился]&quot;;.
+        ///.overlay {
+        ///    position: fixed;
+        ///    top: 0;
+        ///    left: 0;
+        ///    width: 100%;
+        ///    height: 100%;
+        ///    background: rgba(0,0,0,0.6);
+        ///}
+        ///
+        ///.modal-content {
+        ///    padding [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string main_css {
             get {
@@ -136,14 +141,19 @@ namespace MsSqlDependancyBrowser {
         
         /// <summary>
         ///   Ищет локализованную строку, похожую на function openModal() {
+        ///    var paramsText = document.getElementById(&quot;connectionString&quot;).textContent;
+        ///    if (paramsText != &quot;&quot;) {
+        ///        var params = JSON.parse(paramsText);
+        ///        document.getElementById(&quot;server&quot;).value = params.server;
+        ///        document.getElementById(&quot;database&quot;).value = params.database;
+        ///    }
         ///    var overlay = document.getElementById(&apos;overlay&apos;);
         ///    overlay.classList.remove(&quot;is-hidden&quot;);
         ///}
         ///
         ///function closeModal() {
-        ///    var overlay = document.getElementById(&apos;overlay&apos;);
-        ///    overlay.classList.add(&quot;is-hidden&quot;);
-        ///}.
+        ///    document.getElementById(&quot;errorMessage&quot;).innerHTML = &quot;&quot;;
+        ///  [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string modalDialog_js {
             get {
@@ -155,21 +165,41 @@ namespace MsSqlDependancyBrowser {
         ///   Ищет локализованную строку, похожую на function postConnectionString() {
         ///    var xhr = new XMLHttpRequest();
         ///    xhr.open(&apos;POST&apos;, &apos;/connect&apos;);
-        ///    xhr.setRequestHeader(&apos;Content-Type&apos;, &apos;application/text&apos;)
+        ///    xhr.setRequestHeader(&apos;Content-Type&apos;, &apos;application/json&apos;)
         ///    xhr.onreadystatechange = function () {
         ///        if (xhr.readyState == 4) {
         ///            if (xhr.status == 200) {
         ///                location.reload();
-        ///            }
-        ///        }
-        ///    };
-        ///    document.getElementById(&quot;btConnect&quot;).innerHTML = &quot;Wait for connection&quot;;
-        ///    document.getElementById(&quot;btConnect&quot;).disabled = true;
-        ///    xhr.send(docume [остаток строки не уместился]&quot;;.
+        ///            } else if (xhr.status == 406) {
+        ///                var error = JSON.parse(xhr.response);
+        ///                document.getElementById(&quot;errorMessage&quot;).innerHTML = error.errorMessage;
+        /// [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string postConnectionString_js {
             get {
                 return ResourceManager.GetString("postConnectionString_js", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на select type_desc, name
+        ///  from sys.objects
+        /// where type in (&apos;P&apos;)
+        /// order by type_desc, name;
+        ///
+        /// select type_desc, name
+        ///  from sys.objects
+        /// where type in (&apos;FN&apos;)
+        /// order by type_desc, name;
+        ///
+        /// select type_desc, name
+        ///  from sys.objects
+        /// where type in (&apos;T&apos;)
+        /// order by type_desc, name;.
+        /// </summary>
+        internal static string queryAllObjects_sql {
+            get {
+                return ResourceManager.GetString("queryAllObjects_sql", resourceCulture);
             }
         }
         

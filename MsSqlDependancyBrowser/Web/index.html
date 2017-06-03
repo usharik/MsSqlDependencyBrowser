@@ -3,6 +3,7 @@
     <title>{0}</title>
     <script type="text/javascript" src="postConnectionString.js"></script>
     <script type="text/javascript" src="modalDialog.js"></script>
+    <script type="text/javascript" src="serverObjectList.js"></script>
     <link rel="stylesheet" href="main.css">
 </head>
     <body>
@@ -10,6 +11,13 @@
             <button id="btConnectDialog" onclick="openModal()">Connect</button>
             <button id="btSelectAllText" onclick="selectAllText('text')">Select all</button>
             <div class="inline" id="connectionString" size="100">{1}</div>
+        </div>
+        <div id="objectNavigator">
+            <select id="objectTypeComboBox" onchange="objectTypeComboBoxChange()">
+                <option value="empty">Empty</option>
+            </select>
+            <ol id="objectList">
+            </ol>
         </div>
         <pre id="text">{2}</pre>
 

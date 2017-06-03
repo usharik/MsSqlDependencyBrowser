@@ -48,6 +48,39 @@ namespace MsSqlDependancyBrowser
             sendStaticResource(context.Response, Resources.modalDialog_js, "application/javascript");
         }
 
+        [RequestMapping("/serverObjectList.js", "GET")]
+        public void handleServerObjectList(HttpListenerContext context)
+        {
+            if (connectionString == null)
+            {
+                sendStaticResource(context.Response, "", "text/html");
+                return;
+            }
+            string result = "";
+            using (var sqlConn = new SqlConnection(connectionString))
+            {
+                var sqlCmd = new SqlCommand(Resources.queryAllObjects_sql, sqlConn);
+                sqlConn.Open();
+                List<object> allServerObjects = new List<object>();
+                using (SqlDataReader dr = sqlCmd.ExecuteReader())
+                {               
+                    do
+                    {
+                        string curr_type_desc = "";
+                        List<string> serverObjects = new List<string>();
+                        while (dr.Read())
+                        {
+                            curr_type_desc = dr.GetString(0);
+                            serverObjects.Add(dr.GetString(1));
+                        }
+                        allServerObjects.Add(new { type_desc = curr_type_desc, objects = serverObjects});
+                    } while (dr.NextResult());
+                }
+                result = "var allServerObjects = " + JArray.FromObject(allServerObjects).ToString();
+            }
+            sendStaticResource(context.Response, result, "application/javascript");
+        }
+
         [RequestMapping("/", "GET")]
         public void handleIndexPageRequest(HttpListenerContext context)
         {
@@ -62,6 +95,23 @@ namespace MsSqlDependancyBrowser
                 result = requestDatabase(spName);
             }
             sendStaticResource(context.Response, string.Format(Resources.index_html, spName, jsonConnectionParams, result), "text/html");
+        }
+
+        [RequestMapping("/objtext", "GET")]
+        public void handleGetObjTextRequest(HttpListenerContext context)
+        {
+            if (connectionString == null)
+            {
+                sendStaticResource(context.Response, "SQL Server Not connected. Press 'Connect' button.", "text/html");
+                return;
+            }
+            string result = "";
+            string spName = context.Request.QueryString[objectNameParam];
+            if (spName != null)
+            {
+                result = requestDatabase(spName);
+            }
+            sendStaticResource(context.Response, result, "text/html");
         }
 
         [RequestMapping("/connect", "POST")]
