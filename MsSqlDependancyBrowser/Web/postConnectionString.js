@@ -60,6 +60,7 @@ function buildObjectListPanel() {
 function objectTypeComboBoxChange() {
     var comboBox = document.getElementById("objectTypeComboBox");
     var sel_type_desc = comboBox.options[comboBox.selectedIndex].value;
+    comboBox.setAttribute("title", sel_type_desc);
     currentObjectList = allServerObjects.filter(function (obj) {
         return obj.type_desc == sel_type_desc;
     })[0];
@@ -71,7 +72,7 @@ function objectTypeComboBoxChange() {
 }
 
 function buildServerObjectLink(objectName) {
-    return "<a href=" + location.protocol + "//" + location.host + "/?sp=" + objectName + " onclick='getObjText(event)'>" + objectName + "</a>";
+    return "<a href=" + location.protocol + "//" + location.host + "/?sp=" + objectName + " onclick='getObjText(event)' title='" + objectName + "'>" + objectName + "</a>";
 }
 
 function getObjText(event) {
