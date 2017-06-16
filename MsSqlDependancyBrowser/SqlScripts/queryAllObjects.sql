@@ -8,6 +8,11 @@
  where type in ('TF')
  order by type_desc, name;
 
+  select type_desc, name
+  from sys.objects
+ where type in ('IF')
+ order by type_desc, name;
+
  select type_desc, name
   from sys.objects
  where type in ('FN')

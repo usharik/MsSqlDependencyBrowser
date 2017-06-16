@@ -113,3 +113,22 @@ pre {
     display: inline-block;
     margin-top: 10px;
 }
+
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+th {
+    border: 1px solid black;
+    background-color: lavender;
+}
+
+tr {
+    border: 1px solid black;
+}
+
+td {
+    border: 1px solid black;
+    padding: 3px;
+}

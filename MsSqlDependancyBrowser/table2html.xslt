@@ -3,12 +3,14 @@
     xmlns:msxsl="urn:schemas-microsoft-com:xslt" exclude-result-prefixes="msxsl">
     <xsl:output method="xml" indent="yes"/>  
     <xsl:template match="/">
-      <table border="1">
+      <table>
         <tr>
           <th>Column Name</th>
           <th>Type Name</th>
           <th>Max Length</th>
           <th>Precision</th>
+          <th>Is nullable</th>
+          <th>Is identity</th>
         </tr>
       <xsl:for-each select="table/column">
         <tr>
@@ -23,6 +25,12 @@
           </td>
           <td>
             <xsl:value-of select="@precision"/>
+          </td>
+          <td>
+            <xsl:value-of select="@is_nullable"/>
+          </td>
+          <td>
+            <xsl:value-of select="@is_identity"/>
           </td>
         </tr>
       </xsl:for-each>

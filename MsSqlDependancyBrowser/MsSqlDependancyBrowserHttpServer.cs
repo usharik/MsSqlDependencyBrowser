@@ -79,7 +79,8 @@ namespace MsSqlDependancyBrowser
                         }
                     } while (dr.NextResult());
                 }
-                result = "var allServerObjects = " + JArray.FromObject(allServerObjects).ToString();
+                result = "var allServerObjects = " + JArray.FromObject(allServerObjects).ToString() + ";\r\n" +
+                    "var objectNameParam = '" + objectNameParam + "';";
             }
             sendStaticResource(context.Response, result, "application/javascript");
         }

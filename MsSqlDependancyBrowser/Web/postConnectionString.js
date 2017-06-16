@@ -65,26 +65,24 @@ function objectTypeComboBoxChange() {
         return obj.type_desc == sel_type_desc;
     })[0];
 
-    document.getElementById("objectList").innerHTML =
-        currentObjectList.objects.map(function (obj) {
-        return "<li>" + buildServerObjectLink(obj) + "</li>";
-        }).join('');
+    buildObjectListView(document.getElementById("objFilter").value);
 }
 
 function buildServerObjectLink(objectName) {
-    return "<a href=" + location.protocol + "//" + location.host + "/?sp=" + objectName + " onclick='getObjText(event)' title='" + objectName + "'>" + objectName + "</a>";
+    return "<a href=" + location.protocol + "//" + location.host + "/?" + objectNameParam + "=" + objectName +
+        " onclick='getObjText(event)' title='" + objectName + "'>" + objectName + "</a>";
 }
 
 function getObjText(event) {
     var link = event.target;
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/objtext?sp=" + link.textContent);
+    xhr.open("GET", "/objtext?" + objectNameParam + "=" + link.textContent);
     xhr.setRequestHeader("Content-Type", "application/json")
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
                 document.getElementById("text").innerHTML = xhr.response;
-                history.pushState({}, link.textContent, "?sp=" + link.textContent);
+                history.pushState({}, link.textContent, "?" + objectNameParam + "=" + link.textContent);
             }
         }
     };
@@ -93,15 +91,24 @@ function getObjText(event) {
 }
 
 function onObjFilterChange(event) {
-    template = event.target.value;
-    if (template == "") {
+    var filter = event.target.value;
+    if (filter == "") {
         objectTypeComboBoxChange();
         return;
     }
 
-    var objectList = currentObjectList.objects.filter(function (obj) {
-        return obj.toUpperCase().indexOf(template.toUpperCase()) != -1;
-    });
+    buildObjectListView(filter);
+}
+
+function buildObjectListView(filter) {
+    var objectList;
+    if (filter != "") {
+        var objectList = currentObjectList.objects.filter(function (obj) {
+            return obj.toUpperCase().indexOf(filter.toUpperCase()) != -1;
+        });
+    } else {
+        objectList = currentObjectList.objects;
+    }
 
     document.getElementById("objectList").innerHTML =
         objectList.map(function (obj) {
