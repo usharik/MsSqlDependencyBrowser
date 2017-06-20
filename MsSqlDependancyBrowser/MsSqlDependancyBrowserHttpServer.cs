@@ -202,6 +202,7 @@ namespace MsSqlDependancyBrowser
                             {
                                 string depName = dr.GetString(0);
                                 string typeDesc = dr.IsDBNull(1) ? "UNKNOWN_OBJECT" : dr.GetString(1);
+                                typeDesc += dr.IsDBNull(2) ? "" : $": {dr.GetString(2)}";
                                 depList[depName.ToLower()] = $"<a href='{url}?{objectNameParam}={depName}' title='{typeDesc}'>{depName}<a>";
                             }
                         }
