@@ -65,14 +65,14 @@ namespace MsSqlDependancyBrowser {
         ///&lt;head&gt;
         ///    &lt;title&gt;{0}&lt;/title&gt;
         ///    &lt;script type=&quot;text/javascript&quot; src=&quot;postConnectionString.js&quot;&gt;&lt;/script&gt;
-        ///    &lt;script type=&quot;text/javascript&quot; src=&quot;modalDialog.js&quot;&gt;&lt;/script&gt;
         ///    &lt;script type=&quot;text/javascript&quot; src=&quot;serverObjectList.js&quot;&gt;&lt;/script&gt;
         ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;main.css&quot;&gt;
         ///&lt;/head&gt;
         ///    &lt;body&gt;
         ///        &lt;div id=&quot;params&quot;&gt;
         ///            &lt;button id=&quot;btConnectDialog&quot; onclick=&quot;openModal()&quot;&gt;Connect&lt;/button&gt;
-        ///            &lt;button id=&quot;btSelectAllText&quot; onclick=&quot;selectAllText(&apos;text&apos;)&quot;&gt;Select all [остаток строки не уместился]&quot;;.
+        ///            &lt;button id=&quot;btSelectAllText&quot; onclick=&quot;selectAllText(&apos;text&apos;)&quot;&gt;Select all&lt;/button&gt;
+        ///            &lt;div class=&quot;inline&quot; id=&quot;connectionString&quot; si [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string index_html {
             get {
@@ -81,7 +81,7 @@ namespace MsSqlDependancyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outerinner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values.
+        ///   Ищет локализованную строку, похожую на select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outer inner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values varchar integer int data datetime bit numeric execute fetch.
         /// </summary>
         internal static string keywords {
             get {
@@ -93,45 +93,34 @@ namespace MsSqlDependancyBrowser {
         ///   Ищет локализованную строку, похожую на body
         ///{
         ///    overflow: hidden;
+        ///    margin-right: 0;
+        ///    margin-bottom: 0;
         ///}
         ///
-        ///#params
-        ///{
+        ///#params {
         ///    width: 100%;
         ///    height: 35px;
         ///    white-space: nowrap;
         ///}
         ///
-        ///#objectList {
+        ///#objectNavigator {
         ///    width: 15%;
-        ///    height: 100%;
+        ///    height: calc(100% - 35px);
         ///    white-space: nowrap;
         ///    float: left;
+        ///    outline: 1px solid;
+        ///    box-sizing: border-box;
         ///}
         ///
-        ///pre
-        ///{
-        ///    width: 85%;
-        ///    height: 90%;
-        ///    overflow: scroll;
-        ///    float: right;
+        ///#objectTypeComboBox, #objFilter {
+        ///    width: 95%;
+        ///    float: left;
+        ///    margin-left: 3px;
+        ///    margin-right: 3px;
+        ///    box-sizing: border-box;
         ///}
         ///
-        ///.is-hidden {
-        ///    display: none;
-        ///}
-        ///
-        ///.overlay {
-        ///    position: fixed;
-        ///    top: 0;
-        ///    left: 0;
-        ///    width: 100%;
-        ///    height: 100%;
-        ///    background: rgba(0,0,0,0.6);
-        ///}
-        ///
-        ///.modal-content {
-        ///    padding [остаток строки не уместился]&quot;;.
+        ///div#objectNavigator label {        /// [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string main_css {
             get {
@@ -140,40 +129,23 @@ namespace MsSqlDependancyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на function openModal() {
-        ///    var paramsText = document.getElementById(&quot;connectionString&quot;).textContent;
-        ///    if (paramsText != &quot;&quot;) {
-        ///        var params = JSON.parse(paramsText);
-        ///        document.getElementById(&quot;server&quot;).value = params.server;
-        ///        document.getElementById(&quot;database&quot;).value = params.database;
-        ///    }
-        ///    var overlay = document.getElementById(&apos;overlay&apos;);
-        ///    overlay.classList.remove(&quot;is-hidden&quot;);
+        ///   Ищет локализованную строку, похожую на document.addEventListener(&apos;DOMContentLoaded&apos;, onDocumentReady, false);
+        ///window.addEventListener(&apos;popstate&apos;, reloadPageOnBackButtonPress);
+        ///
+        ///function onDocumentReady() {
+        ///    buildObjectListPanel();
         ///}
         ///
-        ///function closeModal() {
-        ///    document.getElementById(&quot;errorMessage&quot;).innerHTML = &quot;&quot;;
-        ///  [остаток строки не уместился]&quot;;.
-        /// </summary>
-        internal static string modalDialog_js {
-            get {
-                return ResourceManager.GetString("modalDialog_js", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на function postConnectionString() {
+        ///function reloadPageOnBackButtonPress(event) {
+        ///    location.reload();
+        ///}
+        ///
+        ///function postConnectionString() {
         ///    var xhr = new XMLHttpRequest();
         ///    xhr.open(&apos;POST&apos;, &apos;/connect&apos;);
-        ///    xhr.setRequestHeader(&apos;Content-Type&apos;, &apos;application/json&apos;)
+        ///    xhr.setRequestHeader(&apos;Content-Type&apos;, &apos;application/json&apos;);
         ///    xhr.onreadystatechange = function () {
-        ///        if (xhr.readyState == 4) {
-        ///            if (xhr.status == 200) {
-        ///                location.reload();
-        ///            } else if (xhr.status == 406) {
-        ///                var error = JSON.parse(xhr.response);
-        ///                document.getElementById(&quot;errorMessage&quot;).innerHTML = error.errorMessage;
-        /// [остаток строки не уместился]&quot;;.
+        ///        if (xhr.r [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string postConnectionString_js {
             get {
@@ -189,13 +161,25 @@ namespace MsSqlDependancyBrowser {
         ///
         /// select type_desc, name
         ///  from sys.objects
+        /// where type in (&apos;TF&apos;)
+        /// order by type_desc, name;
+        ///
+        ///  select type_desc, name
+        ///  from sys.objects
+        /// where type in (&apos;IF&apos;)
+        /// order by type_desc, name;
+        ///
+        /// select type_desc, name
+        ///  from sys.objects
         /// where type in (&apos;FN&apos;)
         /// order by type_desc, name;
         ///
         /// select type_desc, name
         ///  from sys.objects
-        /// where type in (&apos;T&apos;)
-        /// order by type_desc, name;.
+        /// where type in (&apos;V&apos;)
+        /// order by type_desc, name;
+        ///
+        /// select type_desc, name        /// [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string queryAllObjects_sql {
             get {
@@ -204,11 +188,23 @@ namespace MsSqlDependancyBrowser {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на select name 
+        ///  from sys.databases 
+        /// order by name.
+        /// </summary>
+        internal static string queryDatabaseList_sql {
+            get {
+                return ResourceManager.GetString("queryDatabaseList_sql", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на SELECT * 
         ///FROM (
-        ///    SELECT DISTINCT A.referenced_entity_name, B.type_desc
+        ///    SELECT DISTINCT A.referenced_entity_name, B.type_desc, C.base_object_name
         ///    FROM sys.dm_sql_referenced_entities(@objectFullName, &apos;OBJECT&apos;) A
         ///    LEFT JOIN sys.objects B ON A.referenced_id = B.object_id
+        ///	LEFT JOIN sys.synonyms C ON B.object_id = C.object_id
         ///    WHERE A.referenced_id IS NOT NULL
         ///    ) A
         ///ORDER BY LEN(A.referenced_entity_name) desc;.
@@ -238,12 +234,13 @@ namespace MsSqlDependancyBrowser {
         ///   Ищет локализованную строку, похожую на SELECT  [column].name AS &apos;@columnName&apos;,
         ///		[type].name AS &apos;@typeName&apos;, 
         ///		[type].max_length AS &apos;@maxLength&apos;,
-        ///		[type].precision &apos;@precision&apos;
+        ///		[type].precision AS &apos;@precision&apos;,
+        ///		case [column].is_nullable when 1 then &apos;Yes&apos; when 0 then &apos;No&apos; end AS &apos;@is_nullable&apos;,
+        ///		case [column].is_identity when 1 then &apos;Yes&apos; when 0 then &apos;No&apos; end AS &apos;@is_identity&apos;
         ///	FROM sys.tables as [table]
         ///	INNER JOIN sys.columns [column] ON [table].object_id = [column].object_id
         ///	INNER JOIN sys.types [type] ON [column].system_type_id = [type].system_type_id
-        ///	WHERE [table].name = @objectName
-        ///	FOR XML PATH(&apos;column&apos;), ROOT(&apos;table&apos;);.
+        ///	WHER [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string queryTableXml_sql {
             get {
@@ -257,15 +254,16 @@ namespace MsSqlDependancyBrowser {
         ///    xmlns:msxsl=&quot;urn:schemas-microsoft-com:xslt&quot; exclude-result-prefixes=&quot;msxsl&quot;&gt;
         ///    &lt;xsl:output method=&quot;xml&quot; indent=&quot;yes&quot;/&gt;  
         ///    &lt;xsl:template match=&quot;/&quot;&gt;
-        ///      &lt;table border=&quot;1&quot;&gt;
+        ///      &lt;table&gt;
         ///        &lt;tr&gt;
         ///          &lt;th&gt;Column Name&lt;/th&gt;
         ///          &lt;th&gt;Type Name&lt;/th&gt;
         ///          &lt;th&gt;Max Length&lt;/th&gt;
         ///          &lt;th&gt;Precision&lt;/th&gt;
+        ///          &lt;th&gt;Is nullable&lt;/th&gt;
+        ///          &lt;th&gt;Is identity&lt;/th&gt;
         ///        &lt;/tr&gt;
-        ///      &lt;xsl:for-each select=&quot;table/column&quot;&gt;
-        ///        &lt;t [остаток строки не уместился]&quot;;.
+        ///  [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string table2html_xslt {
             get {

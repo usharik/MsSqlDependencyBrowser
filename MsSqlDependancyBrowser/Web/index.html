@@ -2,7 +2,6 @@
 <head>
     <title>{0}</title>
     <script type="text/javascript" src="postConnectionString.js"></script>
-    <script type="text/javascript" src="modalDialog.js"></script>
     <script type="text/javascript" src="serverObjectList.js"></script>
     <link rel="stylesheet" href="main.css">
 </head>
@@ -29,9 +28,11 @@
             <div class="modal-content">
                 <h3>Connection to SQL Server</h3>                
                 <label for="server">Server</label>
-                <input id="server" value="" size="50" /><br />
+                <input id="server" value="" size="50" onblur="serverOnBlur(event)" /><br />
                 <label for="database">Database</label>
-                <input id="database" value="" size="50" /><br /><br />
+                <select id="database">
+                </select>
+                <br /><br />
                 <button id="btCancel" onclick="closeModal()">Cancel</button>
                 <button id="btConnect" onclick="postConnectionString()">Connect</button>
                 <div id="errorMessage"></div>

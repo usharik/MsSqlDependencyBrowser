@@ -83,8 +83,7 @@ pre {
     background: #fff;
 }
 
-.modal-content label, .modal-content input 
-{
+.modal-content label, .modal-content input, .modal-content select {
     display: inline-block;
 }
 
@@ -100,6 +99,12 @@ pre {
 .modal-content label + input {
     width: 70%;
     margin-left: 4%;
+}
+
+.modal-content label + select {
+    width: 70%;
+    margin-left: 4%;
+    height: 21px;
 }
 
 .modal-content button {

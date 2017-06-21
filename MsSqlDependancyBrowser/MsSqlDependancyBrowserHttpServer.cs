@@ -42,12 +42,6 @@ namespace MsSqlDependancyBrowser
             sendStaticResource(context.Response, Resources.postConnectionString_js, "application/javascript");
         }
 
-        [RequestMapping("/modalDialog.js", "GET")]
-        public void handleModalDialogJsRequest(HttpListenerContext context)
-        {
-            sendStaticResource(context.Response, Resources.modalDialog_js, "application/javascript");
-        }
-
         [RequestMapping("/serverObjectList.js", "GET")]
         public void handleServerObjectList(HttpListenerContext context)
         {
@@ -140,6 +134,40 @@ namespace MsSqlDependancyBrowser
                 connectionString = tmpConnectionString;
                 jsonConnectionParams = tmpJsonConnectionParams;
                 sendAnswerWithCode(context.Response, 200);
+            }
+        }
+
+        [RequestMapping("/databaselist", "POST")]
+        public void handleDatabaseListRequest(HttpListenerContext context)
+        {
+            using (var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding))
+            {
+                var tmpJsonConnectionParams = reader.ReadToEnd();
+                dynamic connParams = JObject.Parse(tmpJsonConnectionParams);
+                var tmpConnectionString = string.Format(connectionStringTemplate, connParams.server, "master");
+                try
+                {
+                    List<string> databaseList = new List<string>();
+                    using (var sqlConn = new SqlConnection(tmpConnectionString))
+                    {
+                        var sqlCmd = new SqlCommand(Resources.queryDatabaseList_sql, sqlConn);
+                        sqlConn.Open();
+                        using (SqlDataReader dr = sqlCmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                databaseList.Add(dr.GetString(0));
+                            }
+                        }
+                        sendStaticResource(context.Response, JArray.FromObject(databaseList).ToString(), "application/javascript");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    sendStaticResourceWithCode(context.Response, JObject.FromObject(new { errorMessage = ex.Message }).ToString(), "application/json", 406);
+                    return;
+                }
             }
         }
 
