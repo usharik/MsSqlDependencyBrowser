@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace SqlScriptParser
 {
@@ -87,7 +86,7 @@ namespace SqlScriptParser
                     .Cast<Match>()
                     .Select(m => new TextBlock(true, m.Index, m.Length, m.Value))
                     .ToList();
-            } catch (RegexMatchTimeoutException ex)
+            } catch (RegexMatchTimeoutException)
             {
                 blocks = new List<TextBlock>();
                 blocks.Add(new TextBlock(false, 0, text.Length, text));

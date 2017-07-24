@@ -14,10 +14,10 @@ function postConnectionString() {
     xhr.open('POST', '/connect');
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-            if (xhr.status == 200) {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
                 location.reload();
-            } else if (xhr.status == 406) {
+            } else if (xhr.status === 406) {
                 var error = JSON.parse(xhr.response);
                 document.getElementById("errorMessage").innerHTML = error.errorMessage;
                 document.getElementById("btConnect").disabled = false;
@@ -35,12 +35,13 @@ function postConnectionString() {
 }
 
 function selectAllText(containerid) {
+    var range;
     if (document.selection) { 
-        var range = document.body.createTextRange();
+        range = document.body.createTextRange();
         range.moveToElementText(document.getElementById(containerid));
         range.select().createTextRange();
     } else if (window.getSelection) {
-        var range = document.createRange();
+         range = document.createRange();
          range.selectNode(document.getElementById(containerid));
          window.getSelection().removeAllRanges();
          window.getSelection().addRange(range);
@@ -62,7 +63,7 @@ function objectTypeComboBoxChange() {
     var sel_type_desc = comboBox.options[comboBox.selectedIndex].value;
     comboBox.setAttribute("title", sel_type_desc);
     currentObjectList = allServerObjects.filter(function (obj) {
-        return obj.type_desc == sel_type_desc;
+        return obj.type_desc === sel_type_desc;
     })[0];
 
     buildObjectListView(document.getElementById("objFilter").value);
@@ -77,10 +78,10 @@ function getObjText(event) {
     var link = event.target;
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/objtext?" + objectNameParam + "=" + link.textContent);
-    xhr.setRequestHeader("Content-Type", "application/json")
+    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-            if (xhr.status == 200) {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
                 document.getElementById("text").innerHTML = xhr.response;
                 history.pushState({}, link.textContent, "?" + objectNameParam + "=" + link.textContent);
             }
@@ -92,7 +93,7 @@ function getObjText(event) {
 
 function onObjFilterChange(event) {
     var filter = event.target.value;
-    if (filter == "") {
+    if (filter === "") {
         objectTypeComboBoxChange();
         return;
     }
@@ -102,9 +103,9 @@ function onObjFilterChange(event) {
 
 function buildObjectListView(filter) {
     var objectList;
-    if (filter != "") {
-        var objectList = currentObjectList.objects.filter(function (obj) {
-            return obj.toUpperCase().indexOf(filter.toUpperCase()) != -1;
+    if (filter !== "") {
+        objectList = currentObjectList.objects.filter(function (obj) {
+            return obj.toUpperCase().indexOf(filter.toUpperCase()) !== -1;
         });
     } else {
         objectList = currentObjectList.objects;
@@ -117,22 +118,22 @@ function buildObjectListView(filter) {
 }
 
 function serverOnBlur(event) {
-    if (document.getElementById("server").value == "") {
+    if (document.getElementById("server").value === "") {
         return;
     }
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/databaselist");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-            if (xhr.status == 200) {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
                 var databaseList = JSON.parse(xhr.response);
                 document.getElementById("database").innerHTML =
                     databaseList.map(function (dbName) {
                         return "<option value='" + dbName + "'>" + dbName + "</option>";
                     }).join('');
                 conn = getCurrentConnectionInfo();
-                if (conn != null) {
+                if (conn !== null) {
                     document.getElementById("database").value = conn.database;
                 }
                 document.getElementById("errorMessage").innerHTML = "";
@@ -140,7 +141,7 @@ function serverOnBlur(event) {
                 document.getElementById("btCancel").disabled = false;
                 document.getElementById("server").disabled = false;
                 document.getElementById("database").disabled = false;
-            } else if (xhr.status == 406) {
+            } else if (xhr.status === 406) {
                 var error = JSON.parse(xhr.response);
                 document.getElementById("errorMessage").innerHTML = error.errorMessage;
                 document.getElementById("btConnect").disabled = false;
@@ -151,8 +152,8 @@ function serverOnBlur(event) {
             }
         }
     };
-    if (this.serverName != document.getElementById("server").value) {
-        this.serverName = document.getElementById("server").value
+    if (this.serverName !== document.getElementById("server").value) {
+        this.serverName = document.getElementById("server").value;
         document.getElementById("btConnect").disabled = true;
         document.getElementById("btCancel").disabled = true;
         document.getElementById("server").disabled = true;
@@ -166,7 +167,7 @@ function serverOnBlur(event) {
 
 function getCurrentConnectionInfo() {
     var paramsText = document.getElementById("connectionString").textContent;    
-    if (paramsText != "") {
+    if (paramsText !== "") {
         return JSON.parse(paramsText);
     } else {
         return null;
@@ -175,7 +176,7 @@ function getCurrentConnectionInfo() {
 
 function openModal() {
     conn = getCurrentConnectionInfo();
-    if (conn != null) {
+    if (conn !== null) {
         document.getElementById("server").value = conn.server;
         serverOnBlur(null);
     }

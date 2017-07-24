@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="connectionStringTemplate" xml:space="preserve">
+    <value>Data Source={0};Initial Catalog={1};Integrated Security=True</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="index_html" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>web\index.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
@@ -127,6 +130,9 @@
   </data>
   <data name="main_css" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>web\main.css;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="objectNameParam" xml:space="preserve">
+    <value>sp</value>
   </data>
   <data name="postConnectionString_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>web\postconnectionstring.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

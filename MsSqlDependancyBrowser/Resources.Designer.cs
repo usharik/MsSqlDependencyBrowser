@@ -61,6 +61,15 @@ namespace MsSqlDependancyBrowser {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Data Source={0};Initial Catalog={1};Integrated Security=True.
+        /// </summary>
+        internal static string connectionStringTemplate {
+            get {
+                return ResourceManager.GetString("connectionStringTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на &lt;html&gt;
         ///&lt;head&gt;
         ///    &lt;title&gt;{0}&lt;/title&gt;
@@ -120,11 +129,21 @@ namespace MsSqlDependancyBrowser {
         ///    box-sizing: border-box;
         ///}
         ///
-        ///div#objectNavigator label {        /// [остаток строки не уместился]&quot;;.
+        ///#objectNavigator label {
+        ///   [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string main_css {
             get {
                 return ResourceManager.GetString("main_css", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на sp.
+        /// </summary>
+        internal static string objectNameParam {
+            get {
+                return ResourceManager.GetString("objectNameParam", resourceCulture);
             }
         }
         
@@ -154,32 +173,23 @@ namespace MsSqlDependancyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на select type_desc, name
-        ///  from sys.objects
+        ///   Ищет локализованную строку, похожую на select A.type_desc, A.name, schema_name = B.name
+        ///  from sys.objects A
+        ///  left join sys.schemas B on A.schema_id = B.schema_id
         /// where type in (&apos;P&apos;)
         /// order by type_desc, name;
         ///
-        /// select type_desc, name
-        ///  from sys.objects
+        ///select A.type_desc, A.name, schema_name = B.name
+        ///  from sys.objects A
+        ///  left join sys.schemas B on A.schema_id = B.schema_id
         /// where type in (&apos;TF&apos;)
         /// order by type_desc, name;
         ///
-        ///  select type_desc, name
-        ///  from sys.objects
+        ///select A.type_desc, A.name, schema_name = B.name
+        ///  from sys.objects A
+        ///  left join sys.schemas B on A.schema_id = B.schema_id
         /// where type in (&apos;IF&apos;)
-        /// order by type_desc, name;
-        ///
-        /// select type_desc, name
-        ///  from sys.objects
-        /// where type in (&apos;FN&apos;)
-        /// order by type_desc, name;
-        ///
-        /// select type_desc, name
-        ///  from sys.objects
-        /// where type in (&apos;V&apos;)
-        /// order by type_desc, name;
-        ///
-        /// select type_desc, name        /// [остаток строки не уместился]&quot;;.
+        /// [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string queryAllObjects_sql {
             get {
