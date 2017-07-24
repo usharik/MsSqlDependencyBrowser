@@ -71,13 +71,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="SqlScripts\queryAllObjects.sql" />
+    <Content Include="SqlScripts\queryDatabaseList.sql" />
     <Content Include="SqlScripts\queryObjectInfo.sql" />
     <Content Include="SqlScripts\queryObjectDependancies.sql" />
     <Content Include="SqlScripts\queryTableXml.sql" />
     <Content Include="table2html.xslt" />
     <Content Include="Web\index.html" />
     <Content Include="Web\main.css" />
-    <Content Include="Web\modalDialog.js" />
     <Content Include="Web\postConnectionString.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
