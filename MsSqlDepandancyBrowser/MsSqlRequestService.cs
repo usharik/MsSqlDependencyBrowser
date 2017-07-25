@@ -8,7 +8,7 @@ using System.Xml;
 using System.Xml.Xsl;
 using SqlScriptParser;
 
-namespace MsSqlDependancyBrowser
+namespace MsSqlDepandancyBrowser
 {
     class MsSqlRequestService
     {

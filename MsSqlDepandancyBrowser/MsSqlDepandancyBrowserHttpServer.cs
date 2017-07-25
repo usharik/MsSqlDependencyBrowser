@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
-namespace MsSqlDependancyBrowser
+namespace MsSqlDepandancyBrowser
 {
-    class MsSqlDependancyBrowserHttpServer : SimpleHttpServer
+    class MsSqlDepandancyBrowserHttpServer : SimpleHttpServer
     {
         string jsonConnectionParams;
         MsSqlRequestService msSqlRequestService;
 
-        public MsSqlDependancyBrowserHttpServer(string url) : base(url)
+        public MsSqlDepandancyBrowserHttpServer(string url) : base(url)
         {
             msSqlRequestService = new MsSqlRequestService();
         }

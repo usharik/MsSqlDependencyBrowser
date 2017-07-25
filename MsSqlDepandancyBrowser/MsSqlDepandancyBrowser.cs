@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MsSqlDependancyBrowser
+namespace MsSqlDepandancyBrowser
 {
     class Program
     {
@@ -8,7 +8,7 @@ namespace MsSqlDependancyBrowser
         {
             static void Main()
             {
-                MsSqlDependancyBrowserHttpServer httpServer = new MsSqlDependancyBrowserHttpServer("http://localhost:8085/");
+                MsSqlDepandancyBrowserHttpServer httpServer = new MsSqlDepandancyBrowserHttpServer("http://localhost:8085/");
                 httpServer.Start();
                 Console.ReadKey();
                 httpServer.Stop();

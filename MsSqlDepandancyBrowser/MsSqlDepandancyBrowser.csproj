@@ -7,8 +7,8 @@
     <ProjectGuid>{FAC5945C-E084-475E-B6B5-A11370380A9F}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MsSqlDependancyBrowser</RootNamespace>
-    <AssemblyName>MsSqlDependancyBrowser</AssemblyName>
+    <RootNamespace>MsSqlDepandancyBrowser</RootNamespace>
+    <AssemblyName>MsSqlDepandancyBrowser</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -47,12 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MsSqlDependancyBrowserHttpServer.cs" />
+    <Compile Include="MsSqlDepandancyBrowserHttpServer.cs" />
     <Compile Include="MsSqlRequestService.cs" />
     <Compile Include="RequestMapping.cs" />
     <Compile Include="SimpleHttpServer.cs" />
     <Compile Include="SqlScriptParser.cs" />
-    <Compile Include="MsSqlDependancyBrowser.cs" />
+    <Compile Include="MsSqlDepandancyBrowser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

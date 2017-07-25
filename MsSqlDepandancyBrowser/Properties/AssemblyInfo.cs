@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Usharik")]
-[assembly: AssemblyProduct("httpListner")]
+[assembly: AssemblyProduct("MsSqlDependancyBrowser")]
 [assembly: AssemblyCopyright("Copyright Usharik 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
