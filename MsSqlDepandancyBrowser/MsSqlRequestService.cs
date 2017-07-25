@@ -16,43 +16,26 @@ namespace MsSqlDepandancyBrowser
         XslCompiledTransform xslTranCompiler;
         string connectionString;
 
-        public MsSqlRequestService()
+        public MsSqlRequestService(string server, string database)
         {
+            string tmpConnectionString = string.Format(Resources.connectionStringTemplate, server, database);
+            try
+            {
+                using (var sqlConn = new SqlConnection(tmpConnectionString))
+                {
+                    sqlConn.Open();
+                    connectionString = tmpConnectionString;
+                }
+            } catch (Exception ex)
+            {
+                connectionString = "";
+                throw ex;
+            }
             keywords = new HashSet<string>(Resources.keywords.Split(' '));
             xslTranCompiler = new XslCompiledTransform();
             var xslDoc = new XmlDocument();
             xslDoc.LoadXml(Resources.table2html_xslt);
             xslTranCompiler.Load(xslDoc);
-            connectionString = null;
-        }
-
-        public string ConnectionString
-        {
-            get
-            {
-                return connectionString;
-            }
-
-            set
-            {
-                try
-                {
-                    using (var sqlConn = new SqlConnection(value))
-                    {
-                        sqlConn.Open();
-                        connectionString = value;
-                    }
-                } catch (Exception ex)
-                {
-                    connectionString = null;
-                    throw ex;
-                }
-            }
-        }
-
-        public bool isConnected()
-        {
-            return connectionString != null;
         }
 
         public List<string> requestDatabaseList(string connectionString)
@@ -169,7 +152,7 @@ namespace MsSqlDepandancyBrowser
                                 string depName = dr.GetString(0);
                                 string typeDesc = dr.IsDBNull(1) ? "UNKNOWN_OBJECT" : dr.GetString(1);
                                 typeDesc += dr.IsDBNull(2) ? "" : $": {dr.GetString(2)}";
-                                depList[depName.ToLower()] = $"<a href='{url}?{Resources.objectNameParam}={depName}' title='{typeDesc}'>{depName}<a>";
+                                depList[depName.ToLower()] = $"<a href='{url}#!/{Resources.objectNameParam}/{depName}' title='{typeDesc}'>{depName}<a>";
                             }
                         }
 

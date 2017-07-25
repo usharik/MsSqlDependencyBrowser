@@ -1,191 +1,203 @@
-﻿document.addEventListener('DOMContentLoaded', onDocumentReady, false);
-window.addEventListener('popstate', reloadPageOnBackButtonPress);
-
-function onDocumentReady() {
-    buildObjectListPanel();
-}
-
-function reloadPageOnBackButtonPress(event) {
-    location.reload();
-}
-
-function postConnectionString() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/connect');
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                location.reload();
-            } else if (xhr.status === 406) {
-                var error = JSON.parse(xhr.response);
-                document.getElementById("errorMessage").innerHTML = error.errorMessage;
-                document.getElementById("btConnect").disabled = false;
-                document.getElementById("btCancel").disabled = false;
-            }
-        }
-    };
-    document.getElementById("btConnect").disabled = true;
-    document.getElementById("btCancel").disabled = true;
-    
-    xhr.send(JSON.stringify({
-        server: document.getElementById("server").value,
-        database: document.getElementById("database").value
-    }));
-}
-
-function selectAllText(containerid) {
-    var range;
-    if (document.selection) { 
-        range = document.body.createTextRange();
-        range.moveToElementText(document.getElementById(containerid));
-        range.select().createTextRange();
-    } else if (window.getSelection) {
-         range = document.createRange();
-         range.selectNode(document.getElementById(containerid));
-         window.getSelection().removeAllRanges();
-         window.getSelection().addRange(range);
-    }
-}
-
-var currentObjectList;
-
-function buildObjectListPanel() {
-    var comboBoxItems = allServerObjects.map(function (objList) {
-        return "<option value='" + objList.type_desc + "'>" + objList.type_desc + "</option>";
-    });
-    document.getElementById("objectTypeComboBox").innerHTML = comboBoxItems.join('');
-    objectTypeComboBoxChange();
-}
-
-function objectTypeComboBoxChange() {
-    var comboBox = document.getElementById("objectTypeComboBox");
-    var sel_type_desc = comboBox.options[comboBox.selectedIndex].value;
-    comboBox.setAttribute("title", sel_type_desc);
-    currentObjectList = allServerObjects.filter(function (obj) {
-        return obj.type_desc === sel_type_desc;
-    })[0];
-
-    buildObjectListView(document.getElementById("objFilter").value);
-}
-
-function buildServerObjectLink(objectName) {
-    return "<a href=" + location.protocol + "//" + location.host + "/?" + objectNameParam + "=" + objectName +
-        " onclick='getObjText(event)' title='" + objectName + "'>" + objectName + "</a>";
-}
-
-function getObjText(event) {
-    var link = event.target;
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/objtext?" + objectNameParam + "=" + link.textContent);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                document.getElementById("text").innerHTML = xhr.response;
-                history.pushState({}, link.textContent, "?" + objectNameParam + "=" + link.textContent);
-            }
-        }
-    };
-    xhr.send();
-    event.preventDefault();
-}
-
-function onObjFilterChange(event) {
-    var filter = event.target.value;
-    if (filter === "") {
-        objectTypeComboBoxChange();
-        return;
-    }
-
-    buildObjectListView(filter);
-}
-
-function buildObjectListView(filter) {
-    var objectList;
-    if (filter !== "") {
-        objectList = currentObjectList.objects.filter(function (obj) {
-            return obj.toUpperCase().indexOf(filter.toUpperCase()) !== -1;
-        });
-    } else {
-        objectList = currentObjectList.objects;
-    }
-
-    document.getElementById("objectList").innerHTML =
-        objectList.map(function (obj) {
-            return "<li>" + buildServerObjectLink(obj) + "</li>";
-        }).join('');
-}
-
-function serverOnBlur(event) {
-    if (document.getElementById("server").value === "") {
-        return;
-    }
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/databaselist");
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                var databaseList = JSON.parse(xhr.response);
-                document.getElementById("database").innerHTML =
-                    databaseList.map(function (dbName) {
-                        return "<option value='" + dbName + "'>" + dbName + "</option>";
-                    }).join('');
-                conn = getCurrentConnectionInfo();
-                if (conn !== null) {
-                    document.getElementById("database").value = conn.database;
-                }
-                document.getElementById("errorMessage").innerHTML = "";
-                document.getElementById("btConnect").disabled = false;
-                document.getElementById("btCancel").disabled = false;
-                document.getElementById("server").disabled = false;
-                document.getElementById("database").disabled = false;
-            } else if (xhr.status === 406) {
-                var error = JSON.parse(xhr.response);
-                document.getElementById("errorMessage").innerHTML = error.errorMessage;
-                document.getElementById("btConnect").disabled = false;
-                document.getElementById("btCancel").disabled = false;
-                document.getElementById("server").disabled = false;
-                document.getElementById("database").disabled = false;
-                document.getElementById("database").innerHTML = "";
-            }
-        }
-    };
-    if (this.serverName !== document.getElementById("server").value) {
-        this.serverName = document.getElementById("server").value;
-        document.getElementById("btConnect").disabled = true;
-        document.getElementById("btCancel").disabled = true;
-        document.getElementById("server").disabled = true;
-        document.getElementById("database").innerHTML = "<option>Retrieving database list</option>";
-        document.getElementById("database").disabled = true;
-        xhr.send(JSON.stringify({
-            server: document.getElementById("server").value
-        }));
-    }
-}
-
-function getCurrentConnectionInfo() {
-    var paramsText = document.getElementById("connectionString").textContent;    
-    if (paramsText !== "") {
-        return JSON.parse(paramsText);
-    } else {
-        return null;
-    }
-}
-
-function openModal() {
-    conn = getCurrentConnectionInfo();
-    if (conn !== null) {
-        document.getElementById("server").value = conn.server;
-        serverOnBlur(null);
-    }
+﻿function openModal() {
     var overlay = document.getElementById('overlay');
     overlay.classList.remove("is-hidden");
 }
 
 function closeModal() {
-    document.getElementById("errorMessage").innerHTML = "";
     var overlay = document.getElementById('overlay');
     overlay.classList.add("is-hidden");
 }
+
+function selectAllText(containerid) {
+    var range;
+    if (document.selection) {
+        range = document.body.createTextRange();
+        range.moveToElementText(document.getElementById(containerid));
+        range.select().createTextRange();
+    } else if (window.getSelection) {
+        range = document.createRange();
+        range.selectNode(document.getElementById(containerid));
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+    }
+}
+
+var MsSqlDepandancyBrowser = angular.module('MsSqlDepandancyBrowser', ['ngRoute', 'ngCookies']);
+
+MsSqlDepandancyBrowser.config(function ($routeProvider, $locationProvider, $sceProvider) {
+    $sceProvider.enabled(false);
+    $routeProvider
+        .when('/sp/:objectname', {
+            templateUrl: 'objectText.html',
+            controller: 'ObjectTextCtrl'
+        })
+        .otherwise({
+            redirectTo: '/'
+        });
+});
+
+MsSqlDepandancyBrowser.service('DatabaseService', function ($rootScope, $http, $cookies) {
+    var server = $cookies.get('server') ? $cookies.get('server') : '';
+    var database = $cookies.get('database') ? $cookies.get('database') : '';
+    var databaseList = [];
+
+    this.setConnectData = function (_server, _database, _databaseList) {
+        server = _server;
+        $cookies.put('server', server);
+        database = _database;
+        $cookies.put('database', database);
+        databaseList = _databaseList;
+    };
+
+    this.getServer = function () {
+        return server;
+    };
+
+    this.getDatabase = function () {
+        return database;
+    };
+
+    this.getDatabaseList = function () {
+        return databaseList;
+    };
+
+    this.isConnected = function () {
+        return server !== '' && database !== '';
+    };
+});
+
+MsSqlDepandancyBrowser.controller('ConnectFormCtrl', function ($scope, $rootScope, $http, DatabaseService) {
+
+    $scope.model = {
+        server: DatabaseService.getServer(),
+        database: DatabaseService.getDatabase(),
+        databaseList: [],
+        inProgress: false,
+        errorMessage: ''
+    };
+
+    if (DatabaseService.isConnected()) {
+        loadDatabaseList();
+    }
+
+    function loadDatabaseList() {
+        $scope.model.inProgress = true;
+        $http
+            .post('/databaselist', { 'server': $scope.model.server })
+            .then(function successCallback(response) {
+                $scope.model.databaseList = response.data;
+                $scope.model.database = response.data[0];
+                $scope.model.inProgress = false;
+            }, function errorCallback(response) {
+                $scope.model.errorMessage = response.data.errorMessage;
+                $scope.model.databaseList = [];
+                $scope.model.inProgress = false;
+            });
+    }
+
+    $scope.blur = function () {
+        if ($scope.model.server.trimLeft().trimRight() === '') {
+            return;
+        }
+        loadDatabaseList();
+    };
+
+    $scope.connect = function () {
+        $scope.model.inProgress = true;
+        $http
+            .post('/testconnect', { 'server': $scope.model.server, 'database': $scope.model.database })
+            .then(function successCallback(response) {
+                $scope.model.inProgress = false;
+                DatabaseService.setConnectData($scope.model.server, $scope.model.database, $scope.model.databaseList);
+                $rootScope.$broadcast('connectedSuccessful');
+                closeModal();
+            }, function errorCallback(response) {
+                $scope.model.errorMessage = response.data.errorMessage;
+                $scope.model.inProgress = false;
+            });
+    };
+});
+
+MsSqlDepandancyBrowser.controller('HeaderCtrl', function ($scope, $rootScope, $routeParams, DatabaseService) {
+
+    if (DatabaseService.isConnected()) {
+        $scope.connectionInfo = 'Server: ' + DatabaseService.getServer() + '; Database: ' + DatabaseService.getDatabase();
+    } else {
+        $scope.connectionInfo = '';
+    }
+
+    $rootScope.$on('connectedSuccessful', function () {
+        $scope.connectionInfo = 'Server: ' + DatabaseService.getServer() + '; Database: ' + DatabaseService.getDatabase();        
+    });
+
+    $rootScope.$on('newObject', function () {
+        $scope.objectName = $routeParams.objectname;
+    });
+
+    $scope.connectDialog = function () {
+        openModal();
+    };
+});
+
+MsSqlDepandancyBrowser.controller('ObjectNavigatorCtrl', function ($scope, $rootScope, $http, DatabaseService) {
+
+    var serverObjectList = [];
+
+    $scope.objectTypeList = [];
+    $scope.objectType = null;
+    $scope.currentObjectList = [];
+    $scope.objectText = '';
+
+    if (DatabaseService.isConnected()) {
+        loadObjectList(null, null);
+    }
+
+    $scope.objectTypeChange = function () {
+        $scope.currentObjectList = serverObjectList.filter(function (obj) {
+            return obj.type_desc === $scope.objectType;
+        })[0].objects;
+    };
+
+    $scope.objectLinkClick = function (event) {
+        DatabaseService.setObjectName(event.target.textContent);
+        loadObjectText();
+        event.preventDefault();
+    };
+
+    function loadObjectList(event, data) {
+        $http
+            .post('/serverobjectlist', { 'server': DatabaseService.getServer(), 'database': DatabaseService.getDatabase() })
+            .then(function successCallback(response) {
+                serverObjectList = response.data;
+                $scope.objectTypeList = [];
+                serverObjectList.forEach(function (objList) {
+                    $scope.objectTypeList.push(objList.type_desc);
+                });
+                $scope.objectType = $scope.objectTypeList[0];
+                $scope.objectTypeChange();
+            }, function errorCallback(response) {
+                console.log(response);
+            });
+    }
+
+    $rootScope.$on('connectedSuccessful', loadObjectList);
+});
+
+MsSqlDepandancyBrowser.controller('ObjectTextCtrl', function ($scope, $rootScope, $http, $routeParams, DatabaseService) {
+    $scope.objectText = '';
+    $scope.objectName = $routeParams.objectname;
+
+    function loadObjectText() {
+        $rootScope.$broadcast('newObject');
+        $http
+            .post('/objtext?sp=' + $routeParams.objectname, { 'server': DatabaseService.getServer(), 'database': DatabaseService.getDatabase() })
+            .then(function successCallback(response) {
+                $scope.objectText = response.data;
+            }, function errorCallback(response) {
+                console.log(response);
+            });
+    }
+
+    $rootScope.$on('connectedSuccessful', loadObjectText);
+    loadObjectText();
+});

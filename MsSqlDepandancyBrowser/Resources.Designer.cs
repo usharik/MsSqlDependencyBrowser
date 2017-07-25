@@ -70,18 +70,17 @@ namespace MsSqlDepandancyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на &lt;html&gt;
+        ///   Ищет локализованную строку, похожую на &lt;html ng-app=&quot;MsSqlDepandancyBrowser&quot;&gt;
         ///&lt;head&gt;
-        ///    &lt;title&gt;{0}&lt;/title&gt;
-        ///    &lt;script type=&quot;text/javascript&quot; src=&quot;postConnectionString.js&quot;&gt;&lt;/script&gt;
-        ///    &lt;script type=&quot;text/javascript&quot; src=&quot;serverObjectList.js&quot;&gt;&lt;/script&gt;
+        ///    &lt;title&gt;&lt;/title&gt;
+        ///    &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js&quot;&gt;&lt;/script&gt;
+        ///    &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.min.js&quot;&gt;&lt;/script&gt;
+        ///    &lt;script src=&quot;/appState.js&quot;&gt;&lt;/script&gt;
         ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;main.css&quot;&gt;
         ///&lt;/head&gt;
         ///    &lt;body&gt;
-        ///        &lt;div id=&quot;params&quot;&gt;
-        ///            &lt;button id=&quot;btConnectDialog&quot; onclick=&quot;openModal()&quot;&gt;Connect&lt;/button&gt;
-        ///            &lt;button id=&quot;btSelectAllText&quot; onclick=&quot;selectAllText(&apos;text&apos;)&quot;&gt;Select all&lt;/button&gt;
-        ///            &lt;div class=&quot;inline&quot; id=&quot;connectionString&quot; si [остаток строки не уместился]&quot;;.
+        ///        &lt;div id=&quot;params&quot; ng-controller=&quot;HeaderCtrl&quot;&gt;
+        ///            &lt;button id=&quot;btConnectDialog&quot; ng-click=&quot;connectDialog()&quot;&gt;Connect&lt;/bu [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string index_html {
             get {
@@ -148,23 +147,32 @@ namespace MsSqlDepandancyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на document.addEventListener(&apos;DOMContentLoaded&apos;, onDocumentReady, false);
-        ///window.addEventListener(&apos;popstate&apos;, reloadPageOnBackButtonPress);
-        ///
-        ///function onDocumentReady() {
-        ///    buildObjectListPanel();
+        ///   Ищет локализованную строку, похожую на &lt;pre id=&apos;text&apos; ng-bind-html=&apos;objectText&apos;&gt;&lt;/pre&gt;.
+        /// </summary>
+        internal static string objectText_html {
+            get {
+                return ResourceManager.GetString("objectText_html", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на function openModal() {
+        ///    var overlay = document.getElementById(&apos;overlay&apos;);
+        ///    overlay.classList.remove(&quot;is-hidden&quot;);
         ///}
         ///
-        ///function reloadPageOnBackButtonPress(event) {
-        ///    location.reload();
+        ///function closeModal() {
+        ///    var overlay = document.getElementById(&apos;overlay&apos;);
+        ///    overlay.classList.add(&quot;is-hidden&quot;);
         ///}
         ///
-        ///function postConnectionString() {
-        ///    var xhr = new XMLHttpRequest();
-        ///    xhr.open(&apos;POST&apos;, &apos;/connect&apos;);
-        ///    xhr.setRequestHeader(&apos;Content-Type&apos;, &apos;application/json&apos;);
-        ///    xhr.onreadystatechange = function () {
-        ///        if (xhr.r [остаток строки не уместился]&quot;;.
+        ///function selectAllText(containerid) {
+        ///    var range;
+        ///    if (document.selection) {
+        ///        range = document.body.createTextRange();
+        ///        range.moveToElementText(document.getElementById(containerid));
+        ///        range.select().createTextRange();
+        ///    } e [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string postConnectionString_js {
             get {
