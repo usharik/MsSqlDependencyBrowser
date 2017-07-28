@@ -1,42 +1,51 @@
-﻿<html>
+﻿<html ng-app="MsSqlDepandancyBrowser">
 <head>
-    <title>{0}</title>
-    <script type="text/javascript" src="postConnectionString.js"></script>
-    <script type="text/javascript" src="serverObjectList.js"></script>
+    <title ng-controller="HeaderCtrl">{{objectName}}</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-cookies.min.js"></script>
     <link rel="stylesheet" href="main.css">
 </head>
     <body>
-        <div id="params">
-            <button id="btConnectDialog" onclick="openModal()">Connect</button>
+        <div id="params" ng-controller="HeaderCtrl">
+            <button id="btConnectDialog" ng-click="connectDialog()">Connect</button>
             <button id="btSelectAllText" onclick="selectAllText('text')">Select all</button>
-            <div class="inline" id="connectionString" size="100">{1}</div>
+            <div class="inline" id="connectionString" size="100" ng-bind="connectionInfo">{1}</div>
         </div>
-        <div id="objectNavigator">
+        <div id="objectNavigator" ng-controller="ObjectNavigatorCtrl">
             <label for="objectTypeComboBox"><small>Object type</small></label>
-            <select id="objectTypeComboBox" onchange="objectTypeComboBoxChange()">
-                <option value="empty">Empty</option>
+            <select id="objectTypeComboBox" ng-change="objectTypeChange()" ng-model="objectType">
+                <option ng-repeat="objectType in objectTypeList">{{objectType}}</option>
             </select>
             <label for="objFilter"><small>Object filter</small></label>
-            <input id="objFilter" value="" size="20" oninput="onObjFilterChange(event)"/>
+            <input id="objFilter" value="" size="20" ng-model="filterObjects" />
             <div id="objectListContainer">
-                <ol id="objectList"></ol>
-            </div>            
+                <ol id="objectList">
+                    <li ng-repeat="object in currentObjectList | filter:filterObjects">
+                        <a href="#!/sp/{{object}}" title="{{object}}">{{object}}</a>
+                    </li>
+                </ol>
+            </div>
         </div>
-        <pre id="text">{2}</pre>
+        <div ng-controller="ObjectTextCtrl" ng-view></div>
 
-        <div class="overlay is-hidden" id="overlay">
+        <div class="overlay is-hidden" id="overlay" ng-controller="ConnectFormCtrl">
             <div class="modal-content">
                 <h3>Connection to SQL Server</h3>                
                 <label for="server">Server</label>
-                <input id="server" value="" size="50" onblur="serverOnBlur(event)" /><br />
+                <input id="server" value="" size="50" ng-model="model.server" ng-blur="blur()" ng-disabled="model.inProgress" /><br />
                 <label for="database">Database</label>
-                <select id="database">
+                <select id="database" ng-model="model.database" ng-disabled="model.inProgress">
+                    <option ng-repeat="database in model.databaseList">{{database}}</option>
                 </select>
                 <br /><br />
-                <button id="btCancel" onclick="closeModal()">Cancel</button>
-                <button id="btConnect" onclick="postConnectionString()">Connect</button>
-                <div id="errorMessage"></div>
+                <button id="btCancel" onclick="closeModal()" ng-disabled="model.inProgress">Cancel</button>
+                <button id="btConnect" ng-click="connect()" ng-disabled="model.inProgress">Connect</button>
+                <div id="errorMessage" ng-bind="model.errorMessage"></div>
             </div>
         </div>
+
+        <script type="text/javascript" src="postConnectionString.js"></script>
     </body>
+
 </html>
