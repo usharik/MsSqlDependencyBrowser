@@ -27,7 +27,7 @@ var MsSqlDepandancyBrowser = angular.module('MsSqlDepandancyBrowser', ['ngRoute'
 MsSqlDepandancyBrowser.config(function ($routeProvider, $locationProvider, $sceProvider) {
     $sceProvider.enabled(false);
     $routeProvider
-        .when('/sp/:objectname', {
+        .when('/sch/:schemaname/obj/:objectname', {
             templateUrl: 'objectText.html',
             controller: 'ObjectTextCtrl'
         })
@@ -86,7 +86,7 @@ MsSqlDepandancyBrowser.controller('ConnectFormCtrl', function ($scope, $rootScop
             .post('/databaselist', { 'server': $scope.model.server })
             .then(function successCallback(response) {
                 $scope.model.databaseList = response.data;
-                $scope.model.database = response.data[0];
+                $scope.model.database = $scope.model.databaseList.indexOf($scope.model.database) > -1 ? $scope.model.database : response.data[0];
                 $scope.model.inProgress = false;
             }, function errorCallback(response) {
                 $scope.model.errorMessage = response.data.errorMessage;
@@ -139,7 +139,7 @@ MsSqlDepandancyBrowser.controller('HeaderCtrl', function ($scope, $rootScope, $r
     };
 });
 
-MsSqlDepandancyBrowser.controller('ObjectNavigatorCtrl', function ($scope, $rootScope, $http, DatabaseService) {
+MsSqlDepandancyBrowser.controller('ObjectNavigatorCtrl', function ($scope, $rootScope, $http, $cookies, DatabaseService) {
 
     var serverObjectList = [];
 
@@ -156,6 +156,7 @@ MsSqlDepandancyBrowser.controller('ObjectNavigatorCtrl', function ($scope, $root
         $scope.currentObjectList = serverObjectList.filter(function (obj) {
             return obj.type_desc === $scope.objectType;
         })[0].objects;
+        $cookies.put('objectType', $scope.objectType);
     };
 
     $scope.objectLinkClick = function (event) {
@@ -173,7 +174,7 @@ MsSqlDepandancyBrowser.controller('ObjectNavigatorCtrl', function ($scope, $root
                 serverObjectList.forEach(function (objList) {
                     $scope.objectTypeList.push(objList.type_desc);
                 });
-                $scope.objectType = $scope.objectTypeList[0];
+                $scope.objectType = $cookies.get('objectType') ? $cookies.get('objectType') : $scope.objectTypeList[0];
                 $scope.objectTypeChange();
             }, function errorCallback(response) {
                 console.log(response);
@@ -190,7 +191,7 @@ MsSqlDepandancyBrowser.controller('ObjectTextCtrl', function ($scope, $rootScope
     function loadObjectText() {
         $rootScope.$broadcast('newObject');
         $http
-            .post('/objtext?sp=' + $routeParams.objectname, { 'server': DatabaseService.getServer(), 'database': DatabaseService.getDatabase() })
+            .post('/objtext?sch=' + $routeParams.schemaname + '&obj=' + $routeParams.objectname, { 'server': DatabaseService.getServer(), 'database': DatabaseService.getDatabase() })
             .then(function successCallback(response) {
                 $scope.objectText = response.data;
             }, function errorCallback(response) {

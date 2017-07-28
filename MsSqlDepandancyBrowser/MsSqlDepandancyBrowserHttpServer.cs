@@ -70,10 +70,11 @@ namespace MsSqlDepandancyBrowser
                 ConnectionDto connParams = readResponseAsJson<ConnectionDto>(context.Request);
                 MsSqlRequestService msSqlRequestService = new MsSqlRequestService(connParams.server, connParams.database);
                 string result = "";
-                string spName = context.Request.QueryString[Resources.objectNameParam];
-                if (spName != null)
+                string objectName = context.Request.QueryString[Resources.objectNameParam];
+                string schemaName = context.Request.QueryString[Resources.schemaNameParam];
+                if (objectName != null)
                 {
-                    result = msSqlRequestService.requestDatabaseObjectInfo(url, spName);
+                    result = msSqlRequestService.requestDatabaseObjectInfo(objectName, schemaName);
                 }
                 sendStaticResource(context.Response, result, "text/html");
             }

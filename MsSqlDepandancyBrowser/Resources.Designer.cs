@@ -72,15 +72,14 @@ namespace MsSqlDepandancyBrowser {
         /// <summary>
         ///   Ищет локализованную строку, похожую на &lt;html ng-app=&quot;MsSqlDepandancyBrowser&quot;&gt;
         ///&lt;head&gt;
-        ///    &lt;title&gt;&lt;/title&gt;
+        ///    &lt;title ng-controller=&quot;HeaderCtrl&quot;&gt;{{objectName}}&lt;/title&gt;
         ///    &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js&quot;&gt;&lt;/script&gt;
         ///    &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.min.js&quot;&gt;&lt;/script&gt;
-        ///    &lt;script src=&quot;/appState.js&quot;&gt;&lt;/script&gt;
+        ///    &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-cookies.min.js&quot;&gt;&lt;/script&gt;
         ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;main.css&quot;&gt;
         ///&lt;/head&gt;
         ///    &lt;body&gt;
-        ///        &lt;div id=&quot;params&quot; ng-controller=&quot;HeaderCtrl&quot;&gt;
-        ///            &lt;button id=&quot;btConnectDialog&quot; ng-click=&quot;connectDialog()&quot;&gt;Connect&lt;/bu [остаток строки не уместился]&quot;;.
+        ///        &lt;div id=&quot;params&quot; ng- [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string index_html {
             get {
@@ -138,7 +137,7 @@ namespace MsSqlDepandancyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на sp.
+        ///   Ищет локализованную строку, похожую на obj.
         /// </summary>
         internal static string objectNameParam {
             get {
@@ -219,11 +218,16 @@ namespace MsSqlDepandancyBrowser {
         /// <summary>
         ///   Ищет локализованную строку, похожую на SELECT * 
         ///FROM (
-        ///    SELECT DISTINCT A.referenced_entity_name, B.type_desc, C.base_object_name
+        ///    SELECT DISTINCT 
+        ///	       A.referenced_entity_name,
+        ///		   B.type_desc,
+        ///		   C.base_object_name,
+        ///		   D.name AS schema_name
         ///    FROM sys.dm_sql_referenced_entities(@objectFullName, &apos;OBJECT&apos;) A
         ///    LEFT JOIN sys.objects B ON A.referenced_id = B.object_id
         ///	LEFT JOIN sys.synonyms C ON B.object_id = C.object_id
-        ///    WHERE A.referenced_id IS NOT NULL
+        ///   INNER JOIN sys.schemas D on isnull(B.schema_id, C.schema_id) = D.schema_id
+        ///   WHERE A.referenced_id IS NOT NULL
         ///    ) A
         ///ORDER BY LEN(A.referenced_entity_name) desc;.
         /// </summary>
@@ -235,12 +239,14 @@ namespace MsSqlDepandancyBrowser {
         
         /// <summary>
         ///   Ищет локализованную строку, похожую на SELECT sp_text = B.definition,
-        ///       sp_full_name = C.name + &apos;.&apos; + A.name,
+        ///       sp_name = C.name,
+        ///	   sp_schema = A.name,
         ///	   A.type_desc
         ///FROM sys.objects A
         /// LEFT JOIN sys.sql_modules B ON A.object_id = B.object_id
         ///INNER JOIN sys.schemas C ON A.schema_id = C.schema_id
-        ///WHERE A.name = @objectName;.
+        ///WHERE A.name = @objectName
+        ///  AND C.name = @schemaName;.
         /// </summary>
         internal static string queryObjectInfo_sql {
             get {
@@ -255,14 +261,23 @@ namespace MsSqlDepandancyBrowser {
         ///		[type].precision AS &apos;@precision&apos;,
         ///		case [column].is_nullable when 1 then &apos;Yes&apos; when 0 then &apos;No&apos; end AS &apos;@is_nullable&apos;,
         ///		case [column].is_identity when 1 then &apos;Yes&apos; when 0 then &apos;No&apos; end AS &apos;@is_identity&apos;
-        ///	FROM sys.tables as [table]
+        ///	FROM sys.tables [table]
         ///	INNER JOIN sys.columns [column] ON [table].object_id = [column].object_id
         ///	INNER JOIN sys.types [type] ON [column].system_type_id = [type].system_type_id
-        ///	WHER [остаток строки не уместился]&quot;;.
+        ///	INNER J [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string queryTableXml_sql {
             get {
                 return ResourceManager.GetString("queryTableXml_sql", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на sch.
+        /// </summary>
+        internal static string schemaNameParam {
+            get {
+                return ResourceManager.GetString("schemaNameParam", resourceCulture);
             }
         }
         

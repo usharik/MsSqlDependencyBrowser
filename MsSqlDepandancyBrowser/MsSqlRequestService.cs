@@ -70,11 +70,11 @@ namespace MsSqlDepandancyBrowser
                         do
                         {
                             string curr_type_desc = "";
-                            List<string> serverObjects = new List<string>();
+                            List<object> serverObjects = new List<object>();
                             while (dr.Read())
                             {
                                 curr_type_desc = dr.GetString(0);
-                                serverObjects.Add(dr.GetString(1));
+                                serverObjects.Add(new { name = dr.GetString(1), schema = dr.GetString(2) });
                             }
                             if (serverObjects.Count > 0)
                             {
@@ -92,22 +92,19 @@ namespace MsSqlDepandancyBrowser
             }
         }
 
-        public string requestDatabaseObjectInfo(string url, string spName)
+        public string requestDatabaseObjectInfo(string objectName, string schemaName)
         {
-            string queryQbjectInfo = Resources.queryObjectInfo_sql;
-            string queryObjectDependancies = Resources.queryObjectDependancies_sql;
-            string queryTableXml = Resources.queryTableXml_sql;
-
             try
             {
                 using (var sqlConn = new SqlConnection(connectionString))
                 {
-                    var sqlCmd = new SqlCommand(queryQbjectInfo, sqlConn);
+                    var sqlCmd = new SqlCommand(Resources.queryObjectInfo_sql, sqlConn);
                     sqlConn.Open();
                     sqlCmd.Parameters.Add("@objectName", SqlDbType.NVarChar);
-                    sqlCmd.Parameters["@objectName"].Value = spName;
+                    sqlCmd.Parameters.Add("@schemaName", SqlDbType.NVarChar);
+                    sqlCmd.Parameters["@objectName"].Value = objectName;
+                    sqlCmd.Parameters["@schemaName"].Value = schemaName;
 
-                    string objectFullName = "";
                     string object_text = "";
                     string type_desc = "";
                     using (SqlDataReader dr = sqlCmd.ExecuteReader())
@@ -115,16 +112,19 @@ namespace MsSqlDepandancyBrowser
                         if (dr.HasRows && dr.Read())
                         {
                             object_text = dr.IsDBNull(0) ? "" : dr.GetString(0);
-                            objectFullName = dr.GetString(1);
-                            type_desc = dr.GetString(2);
+                            objectName = dr.GetString(2);
+                            schemaName = dr.GetString(1);
+                            type_desc = dr.GetString(3);
                         }
                     }
 
                     if (type_desc == "USER_TABLE")
                     {
-                        sqlCmd = new SqlCommand(queryTableXml, sqlConn);
+                        sqlCmd = new SqlCommand(Resources.queryTableXml_sql, sqlConn);
                         sqlCmd.Parameters.Add("@objectName", SqlDbType.NVarChar);
-                        sqlCmd.Parameters["@objectName"].Value = spName;
+                        sqlCmd.Parameters.Add("@schemaName", SqlDbType.NVarChar);
+                        sqlCmd.Parameters["@objectName"].Value = objectName;
+                        sqlCmd.Parameters["@schemaName"].Value = schemaName;
                         var xmlSource = new XmlDocument();
                         using (XmlReader dr = sqlCmd.ExecuteXmlReader())
                         {
@@ -138,11 +138,11 @@ namespace MsSqlDepandancyBrowser
                         return htmlDest.ToString();
                     }
 
-                    if (objectFullName != "")
+                    if (objectName != "")
                     {
-                        sqlCmd = new SqlCommand(queryObjectDependancies, sqlConn);
+                        sqlCmd = new SqlCommand(Resources.queryObjectDependancies_sql, sqlConn);
                         sqlCmd.Parameters.Add("@objectFullName", SqlDbType.NVarChar);
-                        sqlCmd.Parameters["@objectFullName"].Value = objectFullName;
+                        sqlCmd.Parameters["@objectFullName"].Value = $"{schemaName}.{objectName}";
 
                         var depList = new Dictionary<string, string>();
                         using (SqlDataReader dr = sqlCmd.ExecuteReader())
@@ -152,7 +152,8 @@ namespace MsSqlDepandancyBrowser
                                 string depName = dr.GetString(0);
                                 string typeDesc = dr.IsDBNull(1) ? "UNKNOWN_OBJECT" : dr.GetString(1);
                                 typeDesc += dr.IsDBNull(2) ? "" : $": {dr.GetString(2)}";
-                                depList[depName.ToLower()] = $"<a href='{url}#!/{Resources.objectNameParam}/{depName}' title='{typeDesc}'>{depName}<a>";
+                                string depSchemaName = dr.GetString(3);
+                                depList[depName.ToLower()] = buildSqlServerObjectLink(depSchemaName, depName, typeDesc);
                             }
                         }
 
@@ -169,6 +170,11 @@ namespace MsSqlDepandancyBrowser
                 Console.WriteLine($"Exception: {ex}");
                 return $"Exception: {ex}";
             }
+        }
+
+        string buildSqlServerObjectLink(string schemaName, string objectName, string typeDesc)
+        {
+            return $"<a href='#!/{Resources.schemaNameParam}/{schemaName}/{Resources.objectNameParam}/{objectName}' title='{typeDesc}'>{objectName}<a>";
         }
     }
 }

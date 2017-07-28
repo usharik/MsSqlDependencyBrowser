@@ -18,11 +18,11 @@
                 <option ng-repeat="objectType in objectTypeList">{{objectType}}</option>
             </select>
             <label for="objFilter"><small>Object filter</small></label>
-            <input id="objFilter" value="" size="20" ng-model="filterObjects" />
+            <input id="objFilter" value="" size="20" ng-model="filterObject.name" />
             <div id="objectListContainer">
                 <ol id="objectList">
-                    <li ng-repeat="object in currentObjectList | filter:filterObjects">
-                        <a href="#!/sp/{{object}}" title="{{object}}">{{object}}</a>
+                    <li ng-repeat="object in currentObjectList | filter:filterObject">
+                        <a href="#!/sch/{{object.schema}}/obj/{{object.name}}" title="{{object.schema}}.{{object.name}}">{{object.schema}}.{{object.name}}</a>
                     </li>
                 </ol>
             </div>
