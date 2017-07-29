@@ -196,6 +196,7 @@ MsSqlDepandancyBrowser.controller('ObjectTextCtrl', function ($scope, $rootScope
                 $scope.objectText = response.data;
             }, function errorCallback(response) {
                 console.log(response);
+                $scope.objectText = 'Application not responding';
             });
     }
 

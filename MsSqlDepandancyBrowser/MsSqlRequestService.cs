@@ -115,6 +115,9 @@ namespace MsSqlDepandancyBrowser
                             objectName = dr.GetString(2);
                             schemaName = dr.GetString(1);
                             type_desc = dr.GetString(3);
+                        } else
+                        {
+                            return $"object '{schemaName}.{objectName}' not exists";
                         }
                     }
 
@@ -162,8 +165,8 @@ namespace MsSqlDepandancyBrowser
                         var commentAndStringProcessor = new CommentAndStringProcessor(singleCommentProcessor);
                         return commentAndStringProcessor.Process(object_text);
                     }
-                    return "object not exists";
                 }
+                return "unknown type of object";
             }
             catch (Exception ex)
             {
