@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MsSqlDepandancyBrowser
+namespace MsSqlDependencyBrowser
 {
     [AttributeUsage(AttributeTargets.Method)]
     class RequestMapping : Attribute

@@ -22,9 +22,9 @@ function selectAllText(containerid) {
     }
 }
 
-var MsSqlDepandancyBrowser = angular.module('MsSqlDepandancyBrowser', ['ngRoute', 'ngCookies']);
+var MsSqlDependencyBrowser = angular.module('MsSqlDependencyBrowser', ['ngRoute', 'ngCookies']);
 
-MsSqlDepandancyBrowser.config(function ($routeProvider, $locationProvider, $sceProvider) {
+MsSqlDependencyBrowser.config(function ($routeProvider, $locationProvider, $sceProvider) {
     $sceProvider.enabled(false);
     $routeProvider
         .when('/sch/:schemaname/obj/:objectname', {
@@ -36,7 +36,7 @@ MsSqlDepandancyBrowser.config(function ($routeProvider, $locationProvider, $sceP
         });
 });
 
-MsSqlDepandancyBrowser.service('DatabaseService', function ($rootScope, $http, $cookies) {
+MsSqlDependencyBrowser.service('DatabaseService', function ($rootScope, $http, $cookies) {
     var server = $cookies.get('server') ? $cookies.get('server') : '';
     var database = $cookies.get('database') ? $cookies.get('database') : '';
     var databaseList = [];
@@ -66,7 +66,7 @@ MsSqlDepandancyBrowser.service('DatabaseService', function ($rootScope, $http, $
     };
 });
 
-MsSqlDepandancyBrowser.controller('ConnectFormCtrl', function ($scope, $rootScope, $http, DatabaseService) {
+MsSqlDependencyBrowser.controller('ConnectFormCtrl', function ($scope, $rootScope, $http, DatabaseService) {
 
     $scope.model = {
         server: DatabaseService.getServer(),
@@ -118,7 +118,7 @@ MsSqlDepandancyBrowser.controller('ConnectFormCtrl', function ($scope, $rootScop
     };
 });
 
-MsSqlDepandancyBrowser.controller('HeaderCtrl', function ($scope, $rootScope, $routeParams, DatabaseService) {
+MsSqlDependencyBrowser.controller('HeaderCtrl', function ($scope, $rootScope, $routeParams, DatabaseService) {
 
     if (DatabaseService.isConnected()) {
         $scope.connectionInfo = 'Server: ' + DatabaseService.getServer() + '; Database: ' + DatabaseService.getDatabase();
@@ -139,7 +139,7 @@ MsSqlDepandancyBrowser.controller('HeaderCtrl', function ($scope, $rootScope, $r
     };
 });
 
-MsSqlDepandancyBrowser.controller('ObjectNavigatorCtrl', function ($scope, $rootScope, $http, $cookies, DatabaseService) {
+MsSqlDependencyBrowser.controller('ObjectNavigatorCtrl', function ($scope, $rootScope, $http, $cookies, DatabaseService) {
 
     var serverObjectList = [];
 
@@ -184,7 +184,7 @@ MsSqlDepandancyBrowser.controller('ObjectNavigatorCtrl', function ($scope, $root
     $rootScope.$on('connectedSuccessful', loadObjectList);
 });
 
-MsSqlDepandancyBrowser.controller('ObjectTextCtrl', function ($scope, $rootScope, $http, $routeParams, DatabaseService) {
+MsSqlDependencyBrowser.controller('ObjectTextCtrl', function ($scope, $rootScope, $http, $routeParams, DatabaseService) {
     $scope.objectText = '';
     $scope.objectName = $routeParams.objectname;
 

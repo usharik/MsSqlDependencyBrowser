@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
-namespace MsSqlDepandancyBrowser
+namespace MsSqlDependencyBrowser
 {
 
-    class MsSqlDepandancyBrowserHttpServer : SimpleHttpServer
+    class MsSqlDependencyBrowserHttpServer : SimpleHttpServer
     {
         class ConnectionDto
         {
@@ -16,7 +16,7 @@ namespace MsSqlDepandancyBrowser
             public string database;
         }
 
-        public MsSqlDepandancyBrowserHttpServer(string url) : base(url)
+        public MsSqlDependencyBrowserHttpServer(string url) : base(url)
         {            
         }
         

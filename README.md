@@ -1,5 +1,5 @@
-# MsSqlDepandancyBrowser
-Simple tool to browse between depandent objects on MS SQL Server
+# MsSqlDependencyBrowser
+Simple tool to browse between dependent objects on MS SQL Server
 1. Build application
 2. Open http://localhost:8085/
 3. Press 'Connect' button to specify server and database name

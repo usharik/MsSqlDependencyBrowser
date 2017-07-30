@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MsSqlDepandancyBrowser {
+namespace MsSqlDependencyBrowser {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace MsSqlDepandancyBrowser {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MsSqlDepandancyBrowser.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MsSqlDependencyBrowser.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -70,7 +70,7 @@ namespace MsSqlDepandancyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на &lt;html ng-app=&quot;MsSqlDepandancyBrowser&quot;&gt;
+        ///   Ищет локализованную строку, похожую на &lt;html ng-app=&quot;MsSqlDependencyBrowser&quot;&gt;
         ///&lt;head&gt;
         ///    &lt;title ng-controller=&quot;HeaderCtrl&quot;&gt;{{objectName}}&lt;/title&gt;
         ///    &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js&quot;&gt;&lt;/script&gt;
@@ -88,7 +88,7 @@ namespace MsSqlDepandancyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outer inner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values varchar integer int data datetime bit numeric execute fetch.
+        ///   Ищет локализованную строку, похожую на select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outer inner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values varchar integer int data datetime bit numeric execute fetch nvarchar revert nocount exists uniqueidentifier output.
         /// </summary>
         internal static string keywords {
             get {

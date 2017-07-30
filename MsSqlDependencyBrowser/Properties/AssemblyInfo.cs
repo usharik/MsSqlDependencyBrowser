@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MsSqlDependancyBrowser")]
+[assembly: AssemblyTitle("MsSqlDependencyBrowser")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Usharik")]
-[assembly: AssemblyProduct("MsSqlDependancyBrowser")]
+[assembly: AssemblyProduct("MsSqlDependencyBrowser")]
 [assembly: AssemblyCopyright("Copyright Usharik 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
