@@ -27,7 +27,7 @@ var MsSqlDependencyBrowser = angular.module('MsSqlDependencyBrowser', ['ngRoute'
 MsSqlDependencyBrowser.config(function ($routeProvider, $locationProvider, $sceProvider) {
     $sceProvider.enabled(false);
     $routeProvider
-        .when('/sch/:schemaname/obj/:objectname', {
+        .when('/:schemaname.:objectname', {
             templateUrl: 'objectText.html',
             controller: 'ObjectTextCtrl'
         })

@@ -125,7 +125,7 @@
     <value>web\index.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="keywords" xml:space="preserve">
-    <value>select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outer inner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values varchar integer int data datetime bit numeric execute fetch nvarchar revert nocount exists uniqueidentifier output</value>
+    <value>select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outer inner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values varchar integer int bigint data datetime bit numeric execute fetch nvarchar revert nocount exists uniqueidentifier output index raiserror</value>
     <comment>SQL keywords</comment>
   </data>
   <data name="main_css" type="System.Resources.ResXFileRef, System.Windows.Forms">

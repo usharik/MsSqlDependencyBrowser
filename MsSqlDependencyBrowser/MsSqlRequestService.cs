@@ -177,7 +177,7 @@ namespace MsSqlDependencyBrowser
 
         string buildSqlServerObjectLink(string schemaName, string objectName, string typeDesc)
         {
-            return $"<a href='#!/{Resources.schemaNameParam}/{schemaName}/{Resources.objectNameParam}/{objectName}' title='{typeDesc}'>{objectName}<a>";
+            return $"<a href='#!/{schemaName}.{objectName}' title='{typeDesc}'>{objectName}<a>";
         }
     }
 }

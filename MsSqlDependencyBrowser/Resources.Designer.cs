@@ -88,7 +88,7 @@ namespace MsSqlDependencyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outer inner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values varchar integer int data datetime bit numeric execute fetch nvarchar revert nocount exists uniqueidentifier output.
+        ///   Ищет локализованную строку, похожую на select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outer inner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values varchar integer int bigint data datetime bit numeric execute fetch nvarchar revert nocount exists uniqueidentifier output index raiserror.
         /// </summary>
         internal static string keywords {
             get {

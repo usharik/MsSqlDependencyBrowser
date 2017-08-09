@@ -22,7 +22,7 @@
             <div id="objectListContainer">
                 <ol id="objectList">
                     <li ng-repeat="object in currentObjectList | filter:filterObject">
-                        <a href="#!/sch/{{object.schema}}/obj/{{object.name}}" title="{{object.schema}}.{{object.name}}">{{object.schema}}.{{object.name}}</a>
+                        <a href="#!/{{object.schema}}.{{object.name}}" title="{{object.schema}}.{{object.name}}">{{object.schema}}.{{object.name}}</a>
                     </li>
                 </ol>
             </div>
