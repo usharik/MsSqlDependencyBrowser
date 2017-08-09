@@ -88,7 +88,7 @@ namespace MsSqlDependencyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outer inner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values varchar integer int bigint data datetime bit numeric execute fetch nvarchar revert nocount exists uniqueidentifier output index raiserror.
+        ///   Ищет локализованную строку, похожую на select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outer inner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values varchar tinyint integer int bigint sysname date datetime datetime2 bit numeric char decimal varbinary execute fetch nvarchar revert nocount e [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string keywords {
             get {
@@ -180,23 +180,11 @@ namespace MsSqlDependencyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на select A.type_desc, A.name, schema_name = B.name
+        ///   Ищет локализованную строку, похожую на select A.name, schema_name = B.name, A.type_desc
         ///  from sys.objects A
         ///  left join sys.schemas B on A.schema_id = B.schema_id
-        /// where type in (&apos;P&apos;)
-        /// order by type_desc, name;
-        ///
-        ///select A.type_desc, A.name, schema_name = B.name
-        ///  from sys.objects A
-        ///  left join sys.schemas B on A.schema_id = B.schema_id
-        /// where type in (&apos;TF&apos;)
-        /// order by type_desc, name;
-        ///
-        ///select A.type_desc, A.name, schema_name = B.name
-        ///  from sys.objects A
-        ///  left join sys.schemas B on A.schema_id = B.schema_id
-        /// where type in (&apos;IF&apos;)
-        /// [остаток строки не уместился]&quot;;.
+        /// where type = @type
+        /// order by type_desc, name;.
         /// </summary>
         internal static string queryAllObjects_sql {
             get {
@@ -238,9 +226,9 @@ namespace MsSqlDependencyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на SELECT sp_text = B.definition,
-        ///       sp_name = C.name,
-        ///	   sp_schema = A.name,
+        ///   Ищет локализованную строку, похожую на SELECT object_text = B.definition,
+        ///       C.name,
+        ///	   schema_name = A.name,
         ///	   A.type_desc
         ///FROM sys.objects A
         /// LEFT JOIN sys.sql_modules B ON A.object_id = B.object_id
@@ -251,6 +239,17 @@ namespace MsSqlDependencyBrowser {
         internal static string queryObjectInfo_sql {
             get {
                 return ResourceManager.GetString("queryObjectInfo_sql", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на  select distinct type, type_desc 
+        ///   from sys.objects
+        ///  where type in (&apos;P&apos;, &apos;TF&apos;, &apos;IF&apos;, &apos;FN&apos;, &apos;V&apos;, &apos;U&apos;);.
+        /// </summary>
+        internal static string queryObjectTypes_sql {
+            get {
+                return ResourceManager.GetString("queryObjectTypes_sql", resourceCulture);
             }
         }
         

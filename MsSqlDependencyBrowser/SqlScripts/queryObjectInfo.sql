@@ -1,6 +1,6 @@
-﻿SELECT sp_text = B.definition,
-       sp_name = C.name,
-	   sp_schema = A.name,
+﻿SELECT object_text = B.definition,
+       C.name,
+	   schema_name = A.name,
 	   A.type_desc
 FROM sys.objects A
  LEFT JOIN sys.sql_modules B ON A.object_id = B.object_id

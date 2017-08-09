@@ -7,9 +7,37 @@ using System.Data;
 using System.Xml;
 using System.Xml.Xsl;
 using SqlScriptParser;
+using Dapper;
 
 namespace MsSqlDependencyBrowser
 {
+    class DbObject
+    {
+        public string name { get; set; }
+        public string schema_name { get; set; }
+        public string type_desc { get; set; }
+        public string object_text { get; set; }
+    }
+
+    class DbObjectType
+    {
+        public string type { get; set; }
+        public string type_desc { get; set; }
+    }
+
+    class DbDependentObject
+    {
+        public string referenced_entity_name { get; set; }
+        public string type_desc { get; set; }
+        public string base_object_name { get; set; }
+        public string schema_name { get; set; }
+
+        public string buildSqlServerObjectLink()
+        {
+            return $"<a href='#!/{schema_name}.{referenced_entity_name}' title='{type_desc}'>{referenced_entity_name}<a>";
+        }
+    }
+
     class MsSqlRequestService
     {
         HashSet<string> keywords;
@@ -17,7 +45,7 @@ namespace MsSqlDependencyBrowser
         string connectionString;
 
         public MsSqlRequestService(string server, string database)
-        {
+        {           
             string tmpConnectionString = string.Format(Resources.connectionStringTemplate, server, database);
             try
             {
@@ -40,102 +68,60 @@ namespace MsSqlDependencyBrowser
 
         public List<string> requestDatabaseList(string connectionString)
         {
-            List<string> databaseList = new List<string>();
-            using (var sqlConn = new SqlConnection(connectionString))
+            using (var sqlConn = openConnection(connectionString))
             {
-                var sqlCmd = new SqlCommand(Resources.queryDatabaseList_sql, sqlConn);
-                sqlConn.Open();
-                using (SqlDataReader dr = sqlCmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        databaseList.Add(dr.GetString(0));
-                    }
-                }
-                return databaseList;
+                return sqlConn.Query<String>(Resources.queryDatabaseList_sql).ToList();
             }
         }
 
         public List<object> requestAllServerObjectList()
         {
+            List<object> allServerObjects = new List<object>();
             try
             {
-                using (var sqlConn = new SqlConnection(connectionString))
+                using (var sqlConn = openConnection(connectionString))
                 {
-                    var sqlCmd = new SqlCommand(Resources.queryAllObjects_sql, sqlConn);
-                    sqlConn.Open();
-                    List<object> allServerObjects = new List<object>();
-                    using (SqlDataReader dr = sqlCmd.ExecuteReader())
+                    var objectTypeList = sqlConn.Query<DbObjectType>(Resources.queryObjectTypes_sql).ToList();
+                    foreach (DbObjectType objType in objectTypeList)
                     {
-                        do
+                        var objectList = sqlConn
+                            .Query<DbObject>(Resources.queryAllObjects_sql, new { type = objType.type })
+                            .Select(o => new { name = o.name, schema_name = o.schema_name })
+                            .ToList();
+                        if (objectList.Count > 0)
                         {
-                            string curr_type_desc = "";
-                            List<object> serverObjects = new List<object>();
-                            while (dr.Read())
-                            {
-                                curr_type_desc = dr.GetString(0);
-                                serverObjects.Add(new { name = dr.GetString(1), schema = dr.GetString(2) });
-                            }
-                            if (serverObjects.Count > 0)
-                            {
-                                allServerObjects.Add(new { type_desc = curr_type_desc, objects = serverObjects });
-                            }
-                        } while (dr.NextResult());
+                            allServerObjects.Add(new { type_desc = objType.type_desc, objects = objectList });
+                        }
                     }
-                    return allServerObjects;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception: {ex}");
-                return new List<object>();
             }
+            return allServerObjects;
         }
 
         public string requestDatabaseObjectInfo(string objectName, string schemaName)
         {
             try
             {
-                using (var sqlConn = new SqlConnection(connectionString))
+                using (var sqlConn = openConnection(connectionString))
                 {
-                    var sqlCmd = new SqlCommand(Resources.queryObjectInfo_sql, sqlConn);
-                    sqlConn.Open();
-                    sqlCmd.Parameters.Add("@objectName", SqlDbType.NVarChar);
-                    sqlCmd.Parameters.Add("@schemaName", SqlDbType.NVarChar);
-                    sqlCmd.Parameters["@objectName"].Value = objectName;
-                    sqlCmd.Parameters["@schemaName"].Value = schemaName;
-
-                    string object_text = "";
-                    string type_desc = "";
-                    using (SqlDataReader dr = sqlCmd.ExecuteReader())
+                    DbObject dbObject = null;
+                    try
                     {
-                        if (dr.HasRows && dr.Read())
-                        {
-                            object_text = dr.IsDBNull(0) ? "" : dr.GetString(0);
-                            objectName = dr.GetString(2);
-                            schemaName = dr.GetString(1);
-                            type_desc = dr.GetString(3);
-                        } else
-                        {
-                            return $"object '{schemaName}.{objectName}' not exists";
-                        }
+                        dbObject = sqlConn.Query<DbObject>(Resources.queryObjectInfo_sql, new { objectName = objectName, schemaName = schemaName }).Single();
+                    } catch(InvalidOperationException)
+                    {
+                        return $"object '{schemaName}.{objectName}' not exists";
                     }
 
-                    if (type_desc == "USER_TABLE")
+                    if (dbObject.type_desc == "USER_TABLE")
                     {
-                        sqlCmd = new SqlCommand(Resources.queryTableXml_sql, sqlConn);
-                        sqlCmd.Parameters.Add("@objectName", SqlDbType.NVarChar);
-                        sqlCmd.Parameters.Add("@schemaName", SqlDbType.NVarChar);
-                        sqlCmd.Parameters["@objectName"].Value = objectName;
-                        sqlCmd.Parameters["@schemaName"].Value = schemaName;
+                        var objXml = sqlConn.Query<String>(Resources.queryTableXml_sql, new { objectName = objectName, schemaName = schemaName }).ToList();
                         var xmlSource = new XmlDocument();
-                        using (XmlReader dr = sqlCmd.ExecuteXmlReader())
-                        {
-                            if (dr.Read())
-                            {
-                                xmlSource.Load(dr);
-                            }
-                        }
+                        xmlSource.LoadXml(String.Join("", objXml));
                         var htmlDest = new StringBuilder();
                         xslTranCompiler.Transform(xmlSource, XmlWriter.Create(htmlDest));
                         return htmlDest.ToString();
@@ -143,27 +129,16 @@ namespace MsSqlDependencyBrowser
 
                     if (objectName != "")
                     {
-                        sqlCmd = new SqlCommand(Resources.queryObjectDependancies_sql, sqlConn);
-                        sqlCmd.Parameters.Add("@objectFullName", SqlDbType.NVarChar);
-                        sqlCmd.Parameters["@objectFullName"].Value = $"{schemaName}.{objectName}";
-
-                        var depList = new Dictionary<string, string>();
-                        using (SqlDataReader dr = sqlCmd.ExecuteReader())
-                        {
-                            while (dr.Read())
-                            {
-                                string depName = dr.GetString(0);
-                                string typeDesc = dr.IsDBNull(1) ? "UNKNOWN_OBJECT" : dr.GetString(1);
-                                typeDesc += dr.IsDBNull(2) ? "" : $": {dr.GetString(2)}";
-                                string depSchemaName = dr.GetString(3);
-                                depList[depName.ToLower()] = buildSqlServerObjectLink(depSchemaName, depName, typeDesc);
-                            }
-                        }
+                        Dictionary<string, string> depList = sqlConn
+                            .Query<DbDependentObject>(Resources.queryObjectDependancies_sql, new { objectFullName = $"{schemaName}.{objectName}" })
+                            .ToDictionary(dep => dep.referenced_entity_name.ToLower(), dep => dep.buildSqlServerObjectLink());
 
                         var wordProcessor = new WordProcessor(keywords, depList);
-                        var singleCommentProcessor = new BlockProcessor(wordProcessor, @"--.*[\r\n]", "green");
+                        var tempTableProcessor = new BlockProcessor(wordProcessor, @"@{1,2}\w+", "<span style='color:dimgray'>{0}</span>");
+                        var varableProcessor = new BlockProcessor(tempTableProcessor, @"\#{1,2}\w+", "<span style='color:dimgray'>{0}</span>");
+                        var singleCommentProcessor = new BlockProcessor(varableProcessor, @"--.*[\r\n]", "<b style='color:green'>{0}</b>");
                         var commentAndStringProcessor = new CommentAndStringProcessor(singleCommentProcessor);
-                        return commentAndStringProcessor.Process(object_text);
+                        return commentAndStringProcessor.Process(dbObject.object_text);
                     }
                 }
                 return "unknown type of object";
@@ -175,9 +150,11 @@ namespace MsSqlDependencyBrowser
             }
         }
 
-        string buildSqlServerObjectLink(string schemaName, string objectName, string typeDesc)
+        IDbConnection openConnection(string connectionString)
         {
-            return $"<a href='#!/{schemaName}.{objectName}' title='{typeDesc}'>{objectName}<a>";
+            var sqlConn = new SqlConnection(connectionString);
+            sqlConn.Open();
+            return sqlConn;
         }
     }
 }

@@ -65,16 +65,16 @@ namespace SqlScriptParser
     class BlockProcessor : TextProcessorDecorator
     {
         private string regex;
-        private string color;
-        public BlockProcessor(ITextProcessor textProcessor, string regex, string color) : base(textProcessor)
+        private string template;
+        public BlockProcessor(ITextProcessor textProcessor, string regex, string template) : base(textProcessor)
         {
             this.regex = regex;
-            this.color = color;
+            this.template = template;
         }
         public override string Process(string text)
         {
             List<TextBlock> blocks = SplitText(text);
-            blocks.ForEach(block => block.text = block.isMatch ? $"<b style='color:{color}'>{block.text}</b>" : base.Process(block.text));
+            blocks.ForEach(block => block.text = block.isMatch ? string.Format(template, block.text) : base.Process(block.text));
             return blocks.Aggregate(String.Empty, (first, second) => first + second.text);
         }
         protected override List<TextBlock> SplitText(string text)

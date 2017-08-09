@@ -189,6 +189,9 @@ MsSqlDependencyBrowser.controller('ObjectTextCtrl', function ($scope, $rootScope
     $scope.objectName = $routeParams.objectname;
 
     function loadObjectText() {
+        if ($routeParams.schemaname === undefined || $routeParams.objectname === undefined) {
+            return;
+        }
         $rootScope.$broadcast('newObject');
         $http
             .post('/objtext?sch=' + $routeParams.schemaname + '&obj=' + $routeParams.objectname, { 'server': DatabaseService.getServer(), 'database': DatabaseService.getDatabase() })
