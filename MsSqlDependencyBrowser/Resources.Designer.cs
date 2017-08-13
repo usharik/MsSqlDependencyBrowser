@@ -90,9 +90,18 @@ namespace MsSqlDependencyBrowser {
         /// <summary>
         ///   Ищет локализованную строку, похожую на select from where order group by insert update delete merge into having exec with declare create function procedure return returns begin end as if while for set try catch drop table view union all case then when cross apply outer inner left join and or on else raiserror throw tran commit rollback pivot unpivot for cursor open is in not null over partition using values varchar tinyint integer int bigint sysname date datetime datetime2 bit numeric char decimal varbinary execute fetch nvarchar revert nocount e [остаток строки не уместился]&quot;;.
         /// </summary>
-        internal static string keywords {
+        internal static string keywords1 {
             get {
-                return ResourceManager.GetString("keywords", resourceCulture);
+                return ResourceManager.GetString("keywords1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на sum avg min max count row_number rank isnull coalesce nullif getdate getutcdate day month year left len trim stuff datepart eomonth suser_sname.
+        /// </summary>
+        internal static string keywords2 {
+            get {
+                return ResourceManager.GetString("keywords2", resourceCulture);
             }
         }
         

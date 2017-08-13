@@ -11,16 +11,32 @@ namespace SqlScriptParser
         string Process(string text);
     }
 
-    class WordProcessor : ITextProcessor
+    abstract class TextProcessorDecorator : ITextProcessor
     {
-        private HashSet<string> keywords;
+        ITextProcessor textProcessor;
+        public TextProcessorDecorator(ITextProcessor textProcessor)
+        {
+            this.textProcessor = textProcessor;
+        }
+        public string Process(string text)
+        {
+            List<TextBlock> blocks = SplitText(text);
+            blocks.ForEach(block => block.text = block.isMatch ? ProcessText(block.text) : textProcessor.Process(block.text));
+            return blocks.Aggregate(string.Empty, (first, second) => first + second.text);
+        }
+        protected abstract List<TextBlock> SplitText(string text);
+        protected abstract string ProcessText(string text);
+    }
+
+    class DependencyProcessor : ITextProcessor
+    {
         private Dictionary<string, string> depList;
 
-        public WordProcessor(HashSet<string> keywords, Dictionary<string, string> depList)
+        public DependencyProcessor(Dictionary<string, string> depList)
         {
-            this.keywords = keywords;
             this.depList = depList;
         }
+
         public virtual string Process(string text)
         {
             var words = Regex.Matches(text, @"\w+|\W+")
@@ -28,17 +44,12 @@ namespace SqlScriptParser
                                 .Select(m => m.Value)
                                 .ToList();
             var builder = new StringBuilder();
-            words.ForEach(word => builder.Append(MakeReplacement(word, depList)));
+            words.ForEach(word => builder.Append(MakeReplacement(word)));
             return builder.ToString();
         }
 
-        string MakeReplacement(string word, Dictionary<string, string> depList)
+        string MakeReplacement(string word)
         {
-            if (keywords.Contains(word.ToLower()))
-            {
-                return $"<b style='color:blue'>{word}</b>";
-            }
-
             string replace;
             if (depList.TryGetValue(word.ToLower(), out replace))
             {
@@ -48,38 +59,60 @@ namespace SqlScriptParser
         }
     }
 
-    abstract class TextProcessorDecorator : ITextProcessor
+    class KeywordProcessor : TextProcessorDecorator
     {
-        ITextProcessor textProcessor;
-        public TextProcessorDecorator(ITextProcessor textProcessor)
+        private HashSet<string> keywords;
+        string template;
+
+        public KeywordProcessor(ITextProcessor textProcessor, HashSet<string> keywords, string template) : base(textProcessor)
         {
-            this.textProcessor = textProcessor;
+            this.keywords = keywords;
+            this.template = template;
         }
-        public virtual string Process(string text)
+
+        protected override string ProcessText(string text)
         {
-            return textProcessor.Process(text);
+            return string.Format(template, text);
         }
-        protected abstract List<TextBlock> SplitText(string text);
+
+        protected override List<TextBlock> SplitText(string text)
+        {
+            List<TextBlock> blocks;
+            try
+            {
+                blocks = Regex.Matches(text, @"\w+|\W+", RegexOptions.Multiline, new TimeSpan(0, 0, 1))
+                    .Cast<Match>()
+                    .Select(m => new TextBlock(keywords.Contains(m.Value.ToLower()), m.Index, m.Length, m.Value))
+                    .ToList();
+            }
+            catch (RegexMatchTimeoutException)
+            {
+                blocks = new List<TextBlock>();
+                blocks.Add(new TextBlock(false, 0, text.Length, text));
+            }
+            return blocks;
+        }
     }
 
     class BlockProcessor : TextProcessorDecorator
     {
         private string regex;
         private string template;
+
         public BlockProcessor(ITextProcessor textProcessor, string regex, string template) : base(textProcessor)
         {
             this.regex = regex;
             this.template = template;
         }
-        public override string Process(string text)
+
+        protected override string ProcessText(string text)
         {
-            List<TextBlock> blocks = SplitText(text);
-            blocks.ForEach(block => block.text = block.isMatch ? string.Format(template, block.text) : base.Process(block.text));
-            return blocks.Aggregate(String.Empty, (first, second) => first + second.text);
+            return string.Format(template, text);
         }
+
         protected override List<TextBlock> SplitText(string text)
         {
-            List<TextBlock> blocks;
+            List<TextBlock> blocks = new List<TextBlock>(); ;
             try
             {
                 blocks = Regex.Matches(text, regex, RegexOptions.Multiline, new TimeSpan(0, 0, 1))
@@ -88,22 +121,28 @@ namespace SqlScriptParser
                     .ToList();
             } catch (RegexMatchTimeoutException)
             {
-                blocks = new List<TextBlock>();
                 blocks.Add(new TextBlock(false, 0, text.Length, text));
                 return blocks;
             }
-            int count = blocks.Count;
-            if (count == 0)
+            if (blocks.Count == 0)
             {
                 blocks.Add(new TextBlock(false, 0, text.Length, text));
                 return blocks;
             }
+            appendNotMatchingBlocks(text, blocks);
+            blocks.Sort();
+            return blocks;
+        }
+
+        private void appendNotMatchingBlocks(string text, List<TextBlock> blocks)
+        {
+            int blockCount = blocks.Count;
             if (blocks[0].index > 0)
             {
                 blocks.Add(new TextBlock(false, 0, blocks[0].index, text.Substring(0, blocks[0].index)));
             }
             TextBlock prevBlock = blocks[0];
-            for (int i = 1; i < count; i++)
+            for (int i = 1; i < blockCount; i++)
             {
                 int prevEndIndex = prevBlock.index + prevBlock.length;
                 int length = blocks[i].index - prevEndIndex;
@@ -119,28 +158,27 @@ namespace SqlScriptParser
                 int length = text.Length - prevEndIndex;
                 blocks.Add(new TextBlock(false, prevBlock.index + prevBlock.length, length, text.Substring(prevEndIndex, length)));
             }
-            blocks.Sort();
-            return blocks;
         }
     }
 
     class CommentAndStringProcessor : TextProcessorDecorator
     {
+        private static char quote = "'"[0];
+
         public CommentAndStringProcessor(ITextProcessor textProcessor) : base(textProcessor)
         {
         }
-        public override string Process(string text)
+
+        protected override string ProcessText(string text)
         {            
-            List<TextBlock> blocks = SplitText(text);
-            blocks.ForEach(block => block.text = block.isMatch ? $"<b style='color:{getBlockColor(block.text)}'>{block.text}</b>" : base.Process(block.text));
-            return blocks.Aggregate(String.Empty, (first, second) => first + second.text);
+            return $"<b style='color:{getBlockColor(text)}'>{text}</b>";
         }
 
         static string getBlockColor(string text)
-        {
-            char quote = "'"[0];
+        {            
             return text[0] == quote ? "red" : "green";
         }
+
         protected override List<TextBlock> SplitText(string text)
         {
             var quotes = Regex.Matches(text, "'", RegexOptions.Multiline, new TimeSpan(0, 0, 1));
@@ -209,6 +247,7 @@ namespace SqlScriptParser
             }
         }
     }
+
     class TextBlock : IComparable<TextBlock>
     {
         public TextBlock(bool isMatch, int index, int length, string text)

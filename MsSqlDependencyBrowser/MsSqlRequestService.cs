@@ -40,7 +40,8 @@ namespace MsSqlDependencyBrowser
 
     class MsSqlRequestService
     {
-        HashSet<string> keywords;
+        HashSet<string> keywords1;
+        HashSet<string> keywords2;
         XslCompiledTransform xslTranCompiler;
         string connectionString;
 
@@ -59,7 +60,8 @@ namespace MsSqlDependencyBrowser
                 connectionString = "";
                 throw ex;
             }
-            keywords = new HashSet<string>(Resources.keywords.Split(' '));
+            keywords1 = new HashSet<string>(Resources.keywords1.Split(' '));
+            keywords2 = new HashSet<string>(Resources.keywords2.Split(' '));
             xslTranCompiler = new XslCompiledTransform();
             var xslDoc = new XmlDocument();
             xslDoc.LoadXml(Resources.table2html_xslt);
@@ -133,8 +135,10 @@ namespace MsSqlDependencyBrowser
                             .Query<DbDependentObject>(Resources.queryObjectDependancies_sql, new { objectFullName = $"{schemaName}.{objectName}" })
                             .ToDictionary(dep => dep.referenced_entity_name.ToLower(), dep => dep.buildSqlServerObjectLink());
 
-                        var wordProcessor = new WordProcessor(keywords, depList);
-                        var tempTableProcessor = new BlockProcessor(wordProcessor, @"@{1,2}\w+", "<span style='color:dimgray'>{0}</span>");
+                        var dependencyProcessor = new DependencyProcessor(depList);
+                        var keywordProcessor1 = new KeywordProcessor(dependencyProcessor, keywords1, "<b style='color:blue'>{0}</b>");
+                        var keywordProcessor2 = new KeywordProcessor(keywordProcessor1, keywords2, "<span style='color:magenta'>{0}</span>");
+                        var tempTableProcessor = new BlockProcessor(keywordProcessor2, @"@{1,2}\w+", "<span style='color:dimgray'>{0}</span>");
                         var varableProcessor = new BlockProcessor(tempTableProcessor, @"\#{1,2}\w+", "<span style='color:dimgray'>{0}</span>");
                         var singleCommentProcessor = new BlockProcessor(varableProcessor, @"--.*[\r\n]", "<b style='color:green'>{0}</b>");
                         var commentAndStringProcessor = new CommentAndStringProcessor(singleCommentProcessor);
