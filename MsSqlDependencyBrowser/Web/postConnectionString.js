@@ -96,7 +96,7 @@ MsSqlDependencyBrowser.controller('ConnectFormCtrl', function ($scope, $rootScop
     }
 
     $scope.blur = function () {
-        if ($scope.model.server.trimLeft().trimRight() === '') {
+        if ($scope.model.server.trim() === '') {
             return;
         }
         loadDatabaseList();
