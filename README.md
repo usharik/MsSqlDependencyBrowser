@@ -12,3 +12,13 @@ Simple tool to browse between dependent objects on MS SQL Server
 * Run application
 * Open http://localhost:8085/
 * Press `Connect` button to specify server and database name
+
+### Supported web browsers
+* Microsoft Internet Explorer 11
+* Microsoft Edge
+* Google Chrome
+
+### To-do list
+* SQL authentication
+* Mozilla Firefox support
+* T-SQL parser improvement
