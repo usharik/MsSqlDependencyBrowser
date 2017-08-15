@@ -226,7 +226,10 @@ namespace SqlScriptParser
                     pos = list[index - 1].Index + list[index - 1].Length;
                 }
             }
-            pos = list[index - 1].Index + list[index - 1].Length;
+            if (result.Count > 0)
+            {
+                pos = list[index - 1].Index + list[index - 1].Length;
+            }
             result.Add(new TextBlock(false, pos, text.Length - pos, text.Substring(pos, text.Length - pos)));
             return result;
         }

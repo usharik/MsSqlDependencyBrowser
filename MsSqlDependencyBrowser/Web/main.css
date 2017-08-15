@@ -12,53 +12,51 @@
 }
 
 #objectNavigator {
-    width: 15%;
-    height: calc(100% - 35px);
+    position: absolute;
+    width: 250px;
+    top: 36px;
+    bottom: 0px;
     white-space: nowrap;
-    float: left;
     outline: 1px solid;
-    box-sizing: border-box;
 }
 
 #objectTypeComboBox, #objFilter {
-    width: 95%;
+    width: 245px;
     float: left;
     margin-left: 3px;
     margin-right: 3px;
-    box-sizing: border-box;
 }
 
 #objectNavigator label {
-    width: 100%;
+    width: 250px;
     float: left;
     margin-top: 3px;
     padding-left: 3px;
-    box-sizing: border-box;
 }
 
 #objectList {
-    width: 75%;
+    width: 250px;
     list-style-type: none;
-    padding: 0 0 0 0;
-    margin-left: 3px;
-    box-sizing: border-box;
+    padding: 0;
+    padding-left: 3px;
 }
 
 #objectListContainer {
-    width: 100%;
-    height: calc(100% - 77px);
-    float: left;
+    position: absolute;
+    top: 90px;
+    bottom: 0px;
     overflow: auto;
-    box-sizing: border-box;
 }
 
 pre {
-    width: 85%;
-    height: calc(100% - 49px);
     overflow: scroll;
-    float: right;
-    padding: 5px;
-    box-sizing: border-box;
+    position: absolute;
+    left: 270px;
+    top: 36px;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    tab-size: 4;
 }
 
 .is-hidden {

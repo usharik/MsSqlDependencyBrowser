@@ -97,7 +97,7 @@ namespace MsSqlDependencyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на sum avg min max count row_number rank isnull coalesce nullif getdate getutcdate day month year left len trim stuff datepart eomonth suser_sname.
+        ///   Ищет локализованную строку, похожую на sum avg min max count row_number rank isnull coalesce nullif getdate getutcdate getdate day month year len trim stuff datepart eomonth suser_sname cast convert db_name dateadd datediff.
         /// </summary>
         internal static string keywords2 {
             get {
@@ -120,24 +120,25 @@ namespace MsSqlDependencyBrowser {
         ///}
         ///
         ///#objectNavigator {
-        ///    width: 15%;
-        ///    height: calc(100% - 35px);
+        ///    position: absolute;
+        ///    width: 250px;
+        ///    top: 36px;
+        ///    bottom: 0px;
         ///    white-space: nowrap;
-        ///    float: left;
         ///    outline: 1px solid;
-        ///    box-sizing: border-box;
         ///}
         ///
         ///#objectTypeComboBox, #objFilter {
-        ///    width: 95%;
+        ///    width: 245px;
         ///    float: left;
         ///    margin-left: 3px;
         ///    margin-right: 3px;
-        ///    box-sizing: border-box;
         ///}
         ///
         ///#objectNavigator label {
-        ///   [остаток строки не уместился]&quot;;.
+        ///    width: 250px;
+        ///    float: left;
+        ///    margin [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string main_css {
             get {
@@ -213,7 +214,7 @@ namespace MsSqlDependencyBrowser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на SELECT * 
+        ///   Ищет локализованную строку, похожую на SELECT *, num = row_number() over (partition by referenced_entity_name order by schema_name) 
         ///FROM (
         ///    SELECT DISTINCT 
         ///	       A.referenced_entity_name,
@@ -224,9 +225,7 @@ namespace MsSqlDependencyBrowser {
         ///    LEFT JOIN sys.objects B ON A.referenced_id = B.object_id
         ///	LEFT JOIN sys.synonyms C ON B.object_id = C.object_id
         ///   INNER JOIN sys.schemas D on isnull(B.schema_id, C.schema_id) = D.schema_id
-        ///   WHERE A.referenced_id IS NOT NULL
-        ///    ) A
-        ///ORDER BY LEN(A.referenced_entity_name) desc;.
+        ///   WHERE A.r [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string queryObjectDependancies_sql {
             get {

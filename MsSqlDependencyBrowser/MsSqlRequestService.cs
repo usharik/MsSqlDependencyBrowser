@@ -31,6 +31,7 @@ namespace MsSqlDependencyBrowser
         public string type_desc { get; set; }
         public string base_object_name { get; set; }
         public string schema_name { get; set; }
+        public int num { get; set; }
 
         public string buildSqlServerObjectLink()
         {
@@ -133,6 +134,7 @@ namespace MsSqlDependencyBrowser
                     {
                         Dictionary<string, string> depList = sqlConn
                             .Query<DbDependentObject>(Resources.queryObjectDependancies_sql, new { objectFullName = $"{schemaName}.{objectName}" })
+                            .Where(dep => dep.num == 1)
                             .ToDictionary(dep => dep.referenced_entity_name.ToLower(), dep => dep.buildSqlServerObjectLink());
 
                         var dependencyProcessor = new DependencyProcessor(depList);

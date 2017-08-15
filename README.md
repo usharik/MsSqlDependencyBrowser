@@ -17,8 +17,8 @@ Simple tool to browse between dependent objects on MS SQL Server
 * Microsoft Internet Explorer 11
 * Microsoft Edge
 * Google Chrome
+* Mozilla Firefox
 
 ### To-do list
 * SQL authentication
-* Mozilla Firefox support
 * T-SQL parser improvement
