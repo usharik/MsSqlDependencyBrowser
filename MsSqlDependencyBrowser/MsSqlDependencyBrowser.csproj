@@ -68,7 +68,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Resources\README.md" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

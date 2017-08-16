@@ -43,7 +43,9 @@
 
 #objectListContainer {
     position: absolute;
+    left: 0px;
     top: 90px;
+    right: 0px;
     bottom: 0px;
     overflow: auto;
 }
@@ -51,7 +53,7 @@
 pre {
     overflow: scroll;
     position: absolute;
-    left: 270px;
+    left: 275px;
     top: 36px;
     right: 0;
     bottom: 0;

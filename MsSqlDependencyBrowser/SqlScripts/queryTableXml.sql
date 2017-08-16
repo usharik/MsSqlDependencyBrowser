@@ -1,4 +1,5 @@
-SELECT  [column].name AS '@columnName',
+SELECT  row_number() OVER (ORDER BY [column].column_id) as '@columnOrder',
+        [column].name AS '@columnName',
 		[type].name AS '@typeName', 
 		[type].max_length AS '@maxLength',
 		[type].precision AS '@precision',
@@ -10,4 +11,5 @@ SELECT  [column].name AS '@columnName',
 	INNER JOIN sys.schemas sc ON [table].schema_id = sc.schema_id
 	WHERE [table].name = @objectName
 	  AND sc.name = @schemaName
+	ORDER BY [column].column_id
 	FOR XML PATH('column'), ROOT('table');

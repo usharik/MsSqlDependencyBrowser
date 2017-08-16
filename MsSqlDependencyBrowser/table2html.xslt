@@ -5,6 +5,7 @@
     <xsl:template match="/">
       <table>
         <tr>
+          <th>№</th>
           <th>Column Name</th>
           <th>Type Name</th>
           <th>Max Length</th>
@@ -14,6 +15,9 @@
         </tr>
       <xsl:for-each select="table/column">
         <tr>
+          <td>
+            <xsl:value-of select="@columnOrder"/>
+          </td>
           <td>
             <xsl:value-of select="@columnName"/>
           </td>
