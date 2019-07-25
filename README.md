@@ -9,7 +9,7 @@ Simple tool to browse between dependent objects on MS SQL Server
 
 ### How to work with it:
 * Build application or download latest [release](https://github.com/usharik/MsSqlDependencyBrowser/releases)
-* Run application
+* Run application (possible with mono)
 * Open http://localhost:8085/
 * Press `Connect` button to specify server and database name
 
